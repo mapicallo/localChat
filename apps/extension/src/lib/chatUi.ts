@@ -294,6 +294,12 @@ export function bindChatEvents(): void {
     }
   });
 
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (chatPanel()?.hidden) return;
+    chatInput()?.focus();
+  });
+
   document.getElementById('cap-chip')?.addEventListener('click', () => {
     void sendMessage(capabilityChipLabel(getLocale()));
   });
@@ -314,8 +320,11 @@ export function refreshChatLabels(): void {
   if (indicator && !indicator.hidden) indicator.textContent = t('writing');
 }
 
-export function onLocaleChangeForChat(_locale: Locale): void {
+export async function onLocaleChangeForChat(locale: Locale): Promise<void> {
   refreshChatLabels();
+  if (!streaming && messages.length === 0) {
+    await createChatSession(locale);
+  }
 }
 
 export function teardownChat(): void {

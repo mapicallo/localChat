@@ -1,11 +1,15 @@
 :root {
   color-scheme: light dark;
+  /* AI4Context family — blue local-trust palette */
   --lc-bg: #0f172a;
   --lc-surface: #1e293b;
   --lc-text: #f1f5f9;
   --lc-muted: #94a3b8;
   --lc-accent: #3b82f6;
   --lc-accent-soft: #1d4ed8;
+  --lc-success: #22c55e;
+  --lc-danger: #ef4444;
+  --lc-radius: 10px;
   font-family:
     'Segoe UI',
     system-ui,
@@ -266,10 +270,11 @@ body {
   font: inherit;
   cursor: pointer;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--lc-radius);
   padding: 10px 16px;
   font-size: 0.875rem;
   font-weight: 600;
+  transition: filter 0.15s ease, background 0.15s ease;
 }
 
 .lc-btn-primary {
@@ -461,10 +466,11 @@ body {
   font-size: 0.875rem;
   line-height: 1.45;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--lc-radius);
   border: 1px solid color-mix(in srgb, var(--lc-muted) 35%, transparent);
   background: var(--lc-bg);
   color: var(--lc-text);
+  transition: outline-color 0.15s ease;
 }
 
 .lc-input:focus {
@@ -497,4 +503,32 @@ body {
 .lc-btn-ghost:hover:not(:disabled) {
   color: var(--lc-text);
   border-color: var(--lc-accent);
+}
+
+.lc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+  border-top: 1px solid color-mix(in srgb, var(--lc-muted) 20%, transparent);
+  background: var(--lc-surface);
+  flex-shrink: 0;
+}
+
+.lc-footer-family {
+  font-size: 0.6875rem;
+  color: var(--lc-muted);
+  letter-spacing: 0.02em;
+}
+
+.lc-footer-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--lc-accent);
+  text-decoration: none;
+}
+
+.lc-footer-link:hover {
+  text-decoration: underline;
 }

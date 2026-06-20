@@ -42,7 +42,10 @@ export type MessageKey =
   | 'errorPageEmpty'
   | 'errorPageNoTab'
   | 'errorPageScript'
-  | 'pageAttachedHint';
+  | 'pageAttachedHint'
+  | 'privacyLink'
+  | 'messageInputLabel'
+  | 'ai4contextFamily';
 
 const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
   en: {
@@ -77,7 +80,7 @@ const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
     send: 'Send',
     stop: 'Stop',
     writing: 'Writing…',
-    composerHint: 'Enter to send · Shift+Enter for new line',
+    composerHint: 'Enter or Ctrl+Enter to send · Shift+Enter for new line',
     errorGeneric: 'Something went wrong. Try again or start a new chat.',
     errorQuota: 'Context limit reached. Start a new chat to continue.',
     welcomeTitle: 'Local chat on your device',
@@ -93,6 +96,9 @@ const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
     errorPageNoTab: 'No active tab found in this window.',
     errorPageScript: 'Could not read this tab. Reload the page and try again.',
     pageAttachedHint: 'Page attached. Ask a question or type “Summarize this page”.',
+    privacyLink: 'Privacy policy',
+    messageInputLabel: 'Message',
+    ai4contextFamily: 'Part of AI4Context',
   },
   es: {
     tagline: 'Chat con IA local — sin subir nada a la nube',
@@ -126,7 +132,7 @@ const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
     send: 'Enviar',
     stop: 'Detener',
     writing: 'Escribiendo…',
-    composerHint: 'Enter para enviar · Shift+Enter nueva línea',
+    composerHint: 'Enter o Ctrl+Enter para enviar · Shift+Enter nueva línea',
     errorGeneric: 'Algo falló. Inténtalo de nuevo o abre una conversación nueva.',
     errorQuota: 'Límite de contexto alcanzado. Abre una conversación nueva para seguir.',
     welcomeTitle: 'Chat local en tu equipo',
@@ -143,6 +149,9 @@ const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
     errorPageNoTab: 'No hay pestaña activa en esta ventana.',
     errorPageScript: 'No se pudo leer la pestaña. Recarga la página e inténtalo de nuevo.',
     pageAttachedHint: 'Página adjunta. Pregunta lo que quieras o escribe «Resume esta página».',
+    privacyLink: 'Política de privacidad',
+    messageInputLabel: 'Mensaje',
+    ai4contextFamily: 'Parte de AI4Context',
   },
 };
 
@@ -216,4 +225,13 @@ export function applyStaticTranslations(root: ParentNode): void {
 
   const clearCtx = root.querySelector<HTMLButtonElement>('#context-clear');
   if (clearCtx) clearCtx.setAttribute('aria-label', t('removeContext'));
+
+  const privacy = root.querySelector<HTMLAnchorElement>('#privacy-link');
+  if (privacy) privacy.textContent = t('privacyLink');
+
+  const family = root.querySelector<HTMLElement>('#ai4context-family');
+  if (family) family.textContent = t('ai4contextFamily');
+
+  const chatInput = root.querySelector<HTMLTextAreaElement>('#chat-input');
+  if (chatInput) chatInput.setAttribute('aria-label', t('messageInputLabel'));
 }

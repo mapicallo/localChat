@@ -1,6 +1,7 @@
 import './sidepanel.css';
 import { bindChatEvents, initChatSession, onLocaleChangeForChat, refreshChatLabels } from './lib/chatUi.js';
 import { applyStaticTranslations, getLocale, initI18n, setLocale, t, type MessageKey } from './lib/i18n.js';
+import { openPrivacyPolicy } from './lib/privacyUrl.js';
 import {
   destroyWarmSession,
   getWarmSession,
@@ -152,9 +153,14 @@ async function boot(): Promise<void> {
       await setLocale(next as Locale);
       document.documentElement.lang = next;
       await refreshUi();
-      onLocaleChangeForChat(next);
+      await onLocaleChangeForChat(next);
     });
   }
+
+  document.getElementById('privacy-link')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openPrivacyPolicy(getLocale());
+  });
 
   document.documentElement.lang = getLocale();
   applyStaticTranslations(document);

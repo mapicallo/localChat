@@ -50,7 +50,7 @@ docs/             → plan, arquitectura, ficha tienda
 
 | Versión | Fase |
 |---------|------|
-| 0.5.0 | Fase 4 — contexto de pestaña activa («Usar esta página») |
+| 0.6.0 | Fase 5 — i18n, privacidad bilingüe, atajos UX |
 
 Ver [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md).
 

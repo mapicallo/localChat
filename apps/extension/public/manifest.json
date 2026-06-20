@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "LocalChat — local AI chat in Chrome",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Chat with your browser's built-in AI. Private, on-device, no cloud upload.",
   "action": {
     "default_title": "LocalChat",

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy — LocalChat</title>
+    <meta
+      name="description"
+      content="Privacy policy for the LocalChat browser extension (local on-device AI chat)."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --text: #0f172a;
+        --muted: #64748b;
+        --accent: #2563eb;
+        --border: #e2e8f0;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0f172a;
+          --text: #f1f5f9;
+          --muted: #94a3b8;
+          --border: #334155;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        font-size: 16px;
+        line-height: 1.55;
+        color: var(--text);
+        background: var(--bg);
+      }
+      .wrap {
+        max-width: 44rem;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 4rem;
+      }
+      header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .header-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      h1 {
+        margin: 0 0 0.35rem;
+        font-size: 1.65rem;
+        font-weight: 700;
+      }
+      .meta {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      .lang-picker {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .lang-picker select {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 0.9rem;
+        background: var(--bg);
+        color: var(--text);
+      }
+      h2 {
+        margin: 2rem 0 0.65rem;
+        font-size: 1.15rem;
+        font-weight: 650;
+        color: var(--accent);
+      }
+      p,
+      li {
+        margin: 0.65rem 0;
+      }
+      ul {
+        margin: 0.5rem 0 0.5rem 1.1rem;
+        padding: 0;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      code {
+        font-size: 0.92em;
+      }
+      .note {
+        margin-top: 2.5rem;
+        padding: 0.9rem 1rem;
+        font-size: 0.88rem;
+        color: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+      }
+      html:lang(en) #content-es,
+      html:lang(en) #page-title-es,
+      html:lang(en) #meta-es,
+      html:lang(en) #lang-label-es {
+        display: none;
+      }
+      html:lang(es) #content-en,
+      html:lang(es) #page-title-en,
+      html:lang(es) #meta-en,
+      html:lang(es) #lang-label-en {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="header-row">
+          <div>
+            <h1 id="page-title-en">Privacy Policy</h1>
+            <h1 id="page-title-es">Política de privacidad</h1>
+            <p class="meta" id="meta-en">
+              <strong>LocalChat</strong> · Browser extension · Effective date: 2 June 2026
+            </p>
+            <p class="meta" id="meta-es">
+              <strong>LocalChat</strong> · Extensión de navegador · Fecha de vigencia: 2 de junio de 2026
+            </p>
+          </div>
+          <label class="lang-picker">
+            <span id="lang-label-en">Language</span>
+            <span id="lang-label-es">Idioma</span>
+            <select id="lang-select" aria-labelledby="lang-label-en">
+              <option value="en">English</option>
+              <option value="es">Español</option>
+            </select>
+          </label>
+        </div>
+      </header>
+
+      <div id="content-en" class="lang-panel">
+        <p>
+          This policy describes how the <strong>LocalChat</strong> extension (“the Extension”) handles information.
+          LocalChat provides a <strong>local chat</strong> using your browser’s on-device language model (Gemini Nano via
+          Chrome’s Prompt API). Your chat text is <strong>not</strong> sent to servers operated by the developer for
+          processing.
+        </p>
+
+        <h2>Single purpose</h2>
+        <p>
+          The Extension has one purpose: a side-panel chat assistant that runs on your device, optionally using visible
+          text from a web page you explicitly attach with <strong>Use this page</strong>.
+        </p>
+
+        <h2>Who we are</h2>
+        <p>
+          LocalChat is part of the <strong>AI4Context</strong> extension family. See
+          <a href="https://www.ai4context.com/" rel="noopener noreferrer" target="_blank">ai4context.com</a>.
+        </p>
+
+        <h2>What the Extension does</h2>
+        <ul>
+          <li>Runs prompts through Chrome’s built-in on-device model in the side panel.</li>
+          <li>
+            When you click <strong>Use this page</strong>, reads <strong>visible text</strong> from the active tab in
+            the current window (via a one-time script injection you confirm) to answer your questions locally.
+          </li>
+          <li>Stores UI language preference and keeps the model session in memory while you chat.</li>
+        </ul>
+
+        <h2>Data we do not collect</h2>
+        <p>
+          No account is required. We do <strong>not</strong> operate a backend that receives your chat or attached page
+          text. Conversation content is not uploaded to AI4Context servers as part of the core feature.
+        </p>
+
+        <h2>Local storage</h2>
+        <p>The Extension uses <code>chrome.storage.local</code> for:</p>
+        <ul>
+          <li>UI language preference (<code>lc_locale</code>),</li>
+          <li>no persistent archive of full chat history in v0.6 (messages live in the panel until you close or start a new chat).</li>
+        </ul>
+        <p>On-device model files are managed by Google Chrome, not by this Extension’s server.</p>
+
+        <h2>Permissions</h2>
+        <ul>
+          <li><strong>Side panel:</strong> chat UI.</li>
+          <li><strong>Storage:</strong> language preference.</li>
+          <li><strong>Active tab + scripting + tabs:</strong> only when you choose <strong>Use this page</strong>, to read visible text from that tab.</li>
+        </ul>
+
+        <h2>Third parties</h2>
+        <p>
+          Google Chrome downloads and runs Gemini Nano on your device. See Google’s documentation and privacy notices for
+          built-in AI. Websites you attach may have their own policies.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          Questions:
+          <a href="https://github.com/mapicallo/localChat" rel="noopener noreferrer" target="_blank">github.com/mapicallo/localChat</a>
+          or
+          <a href="https://www.ai4context.com/" rel="noopener noreferrer" target="_blank">ai4context.com</a>.
+        </p>
+
+        <p class="note">For Chrome Web Store, Edge Add-ons, and the in-extension privacy link.</p>
+      </div>
+
+      <div id="content-es" class="lang-panel">
+        <p>
+          Esta política describe cómo la extensión <strong>LocalChat</strong> («la Extensión») trata la información.
+          LocalChat ofrece un <strong>chat local</strong> con el modelo de lenguaje integrado en tu navegador (Gemini Nano
+          mediante la Prompt API de Chrome). El texto del chat <strong>no</strong> se envía a servidores del desarrollador
+          para procesarlo.
+        </p>
+
+        <h2>Propósito único</h2>
+        <p>
+          La Extensión tiene un solo propósito: un asistente de chat en panel lateral que funciona en tu dispositivo,
+          opcionalmente usando texto visible de una página web que tú adjuntas con <strong>Usar esta página</strong>.
+        </p>
+
+        <h2>Quiénes somos</h2>
+        <p>
+          LocalChat forma parte de la familia de extensiones <strong>AI4Context</strong>. Consulta
+          <a href="https://www.ai4context.com/" rel="noopener noreferrer" target="_blank">ai4context.com</a>.
+        </p>
+
+        <h2>Qué hace la Extensión</h2>
+        <ul>
+          <li>Ejecuta prompts con el modelo integrado en Chrome en el panel lateral.</li>
+          <li>
+            Cuando pulsas <strong>Usar esta página</strong>, lee el <strong>texto visible</strong> de la pestaña activa
+            en la ventana actual (mediante un script que tú confirmas) para responder en local.
+          </li>
+          <li>Guarda la preferencia de idioma de la interfaz y mantiene la sesión del modelo en memoria mientras chateas.</li>
+        </ul>
+
+        <h2>Datos que no recopilamos</h2>
+        <p>
+          No se requiere cuenta. <strong>No</strong> operamos un backend que reciba tu chat o el texto de página adjunto.
+          El contenido de la conversación no se sube a servidores de AI4Context como parte de la función principal.
+        </p>
+
+        <h2>Almacenamiento local</h2>
+        <p>La Extensión usa <code>chrome.storage.local</code> para:</p>
+        <ul>
+          <li>preferencia de idioma (<code>lc_locale</code>),</li>
+          <li>sin archivo persistente del historial completo en v0.6 (los mensajes viven en el panel hasta cerrar o nueva conversación).</li>
+        </ul>
+        <p>Los archivos del modelo en el dispositivo los gestiona Google Chrome, no un servidor de esta Extensión.</p>
+
+        <h2>Permisos</h2>
+        <ul>
+          <li><strong>Panel lateral:</strong> interfaz de chat.</li>
+          <li><strong>Storage:</strong> preferencia de idioma.</li>
+          <li><strong>Pestaña activa + scripting + tabs:</strong> solo cuando eliges <strong>Usar esta página</strong>, para leer texto visible de esa pestaña.</li>
+        </ul>
+
+        <h2>Terceros</h2>
+        <p>
+          Google Chrome descarga y ejecuta Gemini Nano en tu dispositivo. Consulta la documentación y avisos de privacidad
+          de Google sobre IA integrada. Los sitios web que adjuntas tienen sus propias políticas.
+        </p>
+
+        <h2>Contacto</h2>
+        <p>
+          Preguntas:
+          <a href="https://github.com/mapicallo/localChat" rel="noopener noreferrer" target="_blank">github.com/mapicallo/localChat</a>
+          o
+          <a href="https://www.ai4context.com/" rel="noopener noreferrer" target="_blank">ai4context.com</a>.
+        </p>
+
+        <p class="note">Para Chrome Web Store, Edge Add-ons y el enlace de privacidad en la extensión.</p>
+      </div>
+    </div>
+
+    <script src="privacy.js"></script>
+  </body>
+</html>
