@@ -1,8 +1,9 @@
 /**
- * Prompt API / Gemini Nano — availability check and warm-up session.
- * Supports LanguageModel (Chrome 138+) and self.ai.languageModel (typed explainer).
+ * Prompt API / Gemini Nano — availability, session lifecycle, streaming prompts.
  */
 import { MODEL_LANG_OPTIONS } from './modelOptions.js';
+import { getSystemPrompt } from './systemPrompt.js';
+import type { Locale } from './storage.js';
 
 export type ModelUiState =
   | 'checking'
@@ -16,17 +17,30 @@ export type AvailabilityKind = 'available' | 'downloadable' | 'downloading' | 'u
 
 export type DownloadProgressHandler = (loadedRatio: number) => void;
 
-type LanguageModelGlobal = {
-  availability?: (options?: typeof MODEL_LANG_OPTIONS) => Promise<string>;
-  create?: (options?: {
-    monitor?: (m: {
-      addEventListener: (type: 'downloadprogress', fn: (e: { loaded: number }) => void) => void;
-    }) => void;
-    signal?: AbortSignal;
-  }) => Promise<unknown>;
+export type LocalChatSession = {
+  prompt?: (input: string, options?: { signal?: AbortSignal }) => Promise<string>;
+  promptStreaming: (
+    input: string,
+    options?: { signal?: AbortSignal },
+  ) => ReadableStream<string> & AsyncIterable<string>;
+  destroy?: () => void;
 };
 
-let warmSession: unknown | null = null;
+type CreateOptions = {
+  monitor?: (m: {
+    addEventListener: (type: 'downloadprogress', fn: (e: { loaded: number }) => void) => void;
+  }) => void;
+  signal?: AbortSignal;
+  initialPrompts?: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>;
+  systemPrompt?: string;
+};
+
+type LanguageModelGlobal = {
+  availability?: (options?: typeof MODEL_LANG_OPTIONS) => Promise<string>;
+  create?: (options?: CreateOptions) => Promise<LocalChatSession>;
+};
+
+let warmSession: LocalChatSession | null = null;
 let warmAbort: AbortController | null = null;
 
 function languageModelGlobal(): LanguageModelGlobal | undefined {
@@ -36,12 +50,7 @@ function languageModelGlobal(): LanguageModelGlobal | undefined {
 function aiLanguageModelFactory():
   | {
       capabilities: () => Promise<{ available: 'readily' | 'after-download' | 'no' }>;
-      create: (options?: {
-        monitor?: (m: {
-          addEventListener: (type: 'downloadprogress', fn: (e: { loaded: number }) => void) => void;
-        }) => void;
-        signal?: AbortSignal;
-      }) => Promise<unknown>;
+      create: (options?: CreateOptions) => Promise<LocalChatSession>;
     }
   | undefined {
   const ai = (globalThis as unknown as { ai?: { languageModel?: unknown } }).ai;
@@ -55,12 +64,33 @@ function mapLanguageModelStatus(status: string): AvailabilityKind {
   return 'unavailable';
 }
 
-/** Returns whether any built-in language model API exists in this context. */
+function buildMonitor(onProgress?: DownloadProgressHandler) {
+  return (m: {
+    addEventListener: (type: 'downloadprogress', fn: (e: { loaded: number }) => void) => void;
+  }) => {
+    m.addEventListener('downloadprogress', (e) => {
+      const ratio = typeof e.loaded === 'number' ? Math.min(1, Math.max(0, e.loaded)) : 0;
+      onProgress?.(ratio);
+    });
+  };
+}
+
+async function createSession(
+  options: CreateOptions,
+): Promise<LocalChatSession> {
+  const LM = languageModelGlobal();
+  if (LM?.create) return LM.create(options);
+
+  const factory = aiLanguageModelFactory();
+  if (factory?.create) return factory.create(options);
+
+  throw new Error('NO_LANGUAGE_MODEL_API');
+}
+
 export function hasLanguageModelApi(): boolean {
   return Boolean(languageModelGlobal()?.availability ?? aiLanguageModelFactory()?.capabilities);
 }
 
-/** Query model availability without downloading. */
 export async function queryAvailability(): Promise<AvailabilityKind> {
   const LM = languageModelGlobal();
   if (LM?.availability) {
@@ -77,54 +107,72 @@ export async function queryAvailability(): Promise<AvailabilityKind> {
   return 'unavailable';
 }
 
-/**
- * Create / download the on-device model. Resolves when the session is ready for prompts.
- */
+/** Download / load model (no system prompt yet). */
 export async function warmUpModel(onProgress?: DownloadProgressHandler): Promise<void> {
   if (warmSession) return;
 
   warmAbort?.abort();
   warmAbort = new AbortController();
 
-  const monitor = (m: {
-    addEventListener: (type: 'downloadprogress', fn: (e: { loaded: number }) => void) => void;
-  }) => {
-    m.addEventListener('downloadprogress', (e) => {
-      const ratio = typeof e.loaded === 'number' ? Math.min(1, Math.max(0, e.loaded)) : 0;
-      onProgress?.(ratio);
-    });
-  };
+  warmSession = await createSession({
+    monitor: buildMonitor(onProgress),
+    signal: warmAbort.signal,
+  });
+}
 
-  const createOpts = { monitor, signal: warmAbort.signal };
+/** Chat session with system prompt for the selected UI locale. */
+export async function createChatSession(locale: Locale): Promise<LocalChatSession> {
+  destroyWarmSession();
+
+  warmAbort = new AbortController();
+  const systemText = getSystemPrompt(locale);
 
   const LM = languageModelGlobal();
   if (LM?.create) {
-    warmSession = await LM.create(createOpts);
-    return;
+    warmSession = await createSession({
+      signal: warmAbort.signal,
+      initialPrompts: [{ role: 'system', content: systemText }],
+    });
+    return warmSession;
   }
 
-  const factory = aiLanguageModelFactory();
-  if (factory?.create) {
-    warmSession = await factory.create(createOpts);
-    return;
-  }
-
-  throw new Error('NO_LANGUAGE_MODEL_API');
+  warmSession = await createSession({
+    signal: warmAbort.signal,
+    systemPrompt: systemText,
+  });
+  return warmSession;
 }
 
-/** Session kept warm after Phase 1 for Phase 2 chat. */
-export function getWarmSession(): unknown | null {
+export function getWarmSession(): LocalChatSession | null {
   return warmSession;
 }
 
 export function destroyWarmSession(): void {
   warmAbort?.abort();
   warmAbort = null;
-  const session = warmSession as { destroy?: () => void } | null;
   try {
-    session?.destroy?.();
+    warmSession?.destroy?.();
   } catch {
     /* ignore */
   }
   warmSession = null;
+}
+
+export async function promptStreamingChat(
+  text: string,
+  onUpdate: (accumulated: string) => void,
+  signal?: AbortSignal,
+): Promise<string> {
+  const session = warmSession;
+  if (!session?.promptStreaming) throw new Error('NO_SESSION');
+
+  const stream = session.promptStreaming(text.trim(), { signal });
+  let full = '';
+
+  for await (const chunk of stream) {
+    full += chunk;
+    onUpdate(full);
+  }
+
+  return full;
 }

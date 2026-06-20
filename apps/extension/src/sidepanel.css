@@ -40,6 +40,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .lc-header {
@@ -86,6 +88,18 @@ body {
 .lc-main {
   flex: 1;
   display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.lc-main:has(#chat-panel:not([hidden])) {
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+}
+
+.lc-main:has(#model-status:not([hidden])) {
   align-items: center;
   justify-content: center;
   padding: 24px 16px;
@@ -279,4 +293,148 @@ body {
   line-height: 1.5;
   color: var(--lc-muted);
   font-size: 0.9375rem;
+}
+
+/* ——— Chat (Phase 2) ——— */
+
+.lc-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.lc-chat-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--lc-muted) 20%, transparent);
+  background: var(--lc-surface);
+}
+
+.lc-writing {
+  font-size: 0.75rem;
+  color: var(--lc-muted);
+  font-style: italic;
+}
+
+.lc-messages-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.lc-welcome {
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.lc-welcome-title {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.lc-welcome-body {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--lc-muted);
+}
+
+.lc-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lc-msg {
+  max-width: 92%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.lc-msg--user {
+  align-self: flex-end;
+  background: var(--lc-accent);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.lc-msg--assistant {
+  align-self: flex-start;
+  background: var(--lc-surface);
+  border: 1px solid color-mix(in srgb, var(--lc-muted) 22%, transparent);
+  border-bottom-left-radius: 4px;
+}
+
+.lc-msg--error {
+  align-self: stretch;
+  background: color-mix(in srgb, #ef4444 12%, var(--lc-surface));
+  border: 1px solid color-mix(in srgb, #ef4444 35%, transparent);
+  color: var(--lc-text);
+  font-size: 0.8125rem;
+}
+
+.lc-composer {
+  padding: 10px 12px 12px;
+  border-top: 1px solid color-mix(in srgb, var(--lc-muted) 20%, transparent);
+  background: var(--lc-surface);
+}
+
+.lc-input {
+  width: 100%;
+  resize: none;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--lc-muted) 35%, transparent);
+  background: var(--lc-bg);
+  color: var(--lc-text);
+}
+
+.lc-input:focus {
+  outline: 2px solid color-mix(in srgb, var(--lc-accent) 45%, transparent);
+  outline-offset: 1px;
+}
+
+.lc-input:disabled {
+  opacity: 0.65;
+}
+
+.lc-composer-hint {
+  margin: 6px 0 8px;
+  font-size: 0.6875rem;
+  color: var(--lc-muted);
+}
+
+.lc-composer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.lc-btn-ghost {
+  background: transparent;
+  color: var(--lc-muted);
+  border: 1px solid color-mix(in srgb, var(--lc-muted) 30%, transparent);
+}
+
+.lc-btn-ghost:hover:not(:disabled) {
+  color: var(--lc-text);
+  border-color: var(--lc-accent);
 }

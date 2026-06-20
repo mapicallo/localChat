@@ -70,6 +70,45 @@
             Check again
           </button>
         </section>
+
+        <section id="chat-panel" class="lc-chat" hidden>
+          <div class="lc-chat-toolbar">
+            <button type="button" id="new-chat-btn" class="lc-btn lc-btn-ghost">
+              New chat
+            </button>
+            <span id="writing-indicator" class="lc-writing" hidden>Writing…</span>
+          </div>
+
+          <div id="messages-wrap" class="lc-messages-wrap">
+            <div id="messages-empty" class="lc-welcome">
+              <p class="lc-welcome-title" id="welcome-title">Local chat on your device</p>
+              <p class="lc-welcome-body" id="welcome-body">
+                Ask anything. Replies stay on this computer—nothing is sent to the cloud.
+              </p>
+            </div>
+            <div id="messages" class="lc-messages" role="log" aria-live="polite"></div>
+          </div>
+
+          <div class="lc-composer">
+            <textarea
+              id="chat-input"
+              class="lc-input"
+              rows="2"
+              autocomplete="off"
+              spellcheck="true"
+              aria-label="Message"
+            ></textarea>
+            <p class="lc-composer-hint" id="composer-hint">
+              Enter to send · Shift+Enter for new line
+            </p>
+            <div class="lc-composer-actions">
+              <button type="button" id="stop-btn" class="lc-btn lc-btn-ghost" hidden>
+                Stop
+              </button>
+              <button type="button" id="send-btn" class="lc-btn lc-btn-primary">Send</button>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
     <script type="module" src="/src/sidepanel.ts"></script>

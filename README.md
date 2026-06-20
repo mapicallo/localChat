@@ -50,7 +50,7 @@ docs/             → plan, arquitectura, ficha tienda
 
 | Versión | Fase |
 |---------|------|
-| 0.2.0 | Fase 1 — comprobación y descarga de Gemini Nano |
+| 0.3.0 | Fase 2 — chat con streaming local |
 
 Ver [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md).
 

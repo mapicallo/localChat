@@ -24,7 +24,16 @@ export type MessageKey =
   | 'reqFlags'
   | 'docsLink'
   | 'localeEn'
-  | 'localeEs';
+  | 'localeEs'
+  | 'newChat'
+  | 'send'
+  | 'stop'
+  | 'writing'
+  | 'composerHint'
+  | 'errorGeneric'
+  | 'errorQuota'
+  | 'welcomeTitle'
+  | 'welcomeBody';
 
 const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
   en: {
@@ -37,7 +46,7 @@ const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
     stateDownloading: 'Downloading on-device model…',
     stateDownloadingDetail: 'This may take a few minutes. Keep Chrome open.',
     stateReady: 'Local AI is ready',
-    stateReadyDetail: 'Gemini Nano is loaded. Phase 2 will enable chat here.',
+    stateReadyDetail: 'Starting chat…',
     stateUnavailable: 'On-device AI not available',
     stateUnavailableDetail:
       'This device or Chrome setup does not meet the requirements for Gemini Nano.',
@@ -55,6 +64,15 @@ const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
     docsLink: 'Chrome built-in AI docs',
     localeEn: 'English',
     localeEs: 'Español',
+    newChat: 'New chat',
+    send: 'Send',
+    stop: 'Stop',
+    writing: 'Writing…',
+    composerHint: 'Enter to send · Shift+Enter for new line',
+    errorGeneric: 'Something went wrong. Try again or start a new chat.',
+    errorQuota: 'Context limit reached. Start a new chat to continue.',
+    welcomeTitle: 'Local chat on your device',
+    welcomeBody: 'Ask anything. Replies stay on this computer—nothing is sent to the cloud.',
   },
   es: {
     tagline: 'Chat con IA local — sin subir nada a la nube',
@@ -66,7 +84,7 @@ const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
     stateDownloading: 'Descargando modelo local…',
     stateDownloadingDetail: 'Puede tardar unos minutos. Mantén Chrome abierto.',
     stateReady: 'IA local lista',
-    stateReadyDetail: 'Gemini Nano está cargado. La Fase 2 activará el chat aquí.',
+    stateReadyDetail: 'Iniciando chat…',
     stateUnavailable: 'IA en dispositivo no disponible',
     stateUnavailableDetail:
       'Este equipo o configuración de Chrome no cumple los requisitos de Gemini Nano.',
@@ -84,6 +102,15 @@ const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
     docsLink: 'Documentación de IA integrada en Chrome',
     localeEn: 'English',
     localeEs: 'Español',
+    newChat: 'Nueva conversación',
+    send: 'Enviar',
+    stop: 'Detener',
+    writing: 'Escribiendo…',
+    composerHint: 'Enter para enviar · Shift+Enter nueva línea',
+    errorGeneric: 'Algo falló. Inténtalo de nuevo o abre una conversación nueva.',
+    errorQuota: 'Límite de contexto alcanzado. Abre una conversación nueva para seguir.',
+    welcomeTitle: 'Chat local en tu equipo',
+    welcomeBody: 'Pregunta lo que quieras. Las respuestas se quedan en este ordenador—nada va a la nube.',
   },
 };
 
@@ -133,4 +160,22 @@ export function applyStaticTranslations(root: ParentNode): void {
 
   const progressLabel = root.querySelector<HTMLElement>('#progress-label');
   if (progressLabel) progressLabel.textContent = t('progressLabel');
+
+  const newChat = root.querySelector<HTMLButtonElement>('#new-chat-btn');
+  if (newChat) newChat.textContent = t('newChat');
+
+  const send = root.querySelector<HTMLButtonElement>('#send-btn');
+  if (send) send.textContent = t('send');
+
+  const stop = root.querySelector<HTMLButtonElement>('#stop-btn');
+  if (stop) stop.textContent = t('stop');
+
+  const hint = root.querySelector<HTMLElement>('#composer-hint');
+  if (hint) hint.textContent = t('composerHint');
+
+  const welcomeTitle = root.querySelector<HTMLElement>('#welcome-title');
+  if (welcomeTitle) welcomeTitle.textContent = t('welcomeTitle');
+
+  const welcomeBody = root.querySelector<HTMLElement>('#welcome-body');
+  if (welcomeBody) welcomeBody.textContent = t('welcomeBody');
 }

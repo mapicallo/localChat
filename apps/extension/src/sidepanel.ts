@@ -1,4 +1,5 @@
 import './sidepanel.css';
+import { bindChatEvents, initChatSession, onLocaleChangeForChat, refreshChatLabels } from './lib/chatUi.js';
 import { applyStaticTranslations, getLocale, initI18n, setLocale, t, type MessageKey } from './lib/i18n.js';
 import {
   destroyWarmSession,
@@ -22,6 +23,7 @@ const spinner = document.querySelector<HTMLElement>('.lc-spinner');
 const docsLink = document.getElementById('docs-link') as HTMLAnchorElement | null;
 
 let running = false;
+let chatReady = false;
 
 function setUiState(state: ModelUiState): void {
   statusSection?.setAttribute('data-state', state);
@@ -45,14 +47,35 @@ function setProgress(ratio: number): void {
   progressBar.textContent = `${pct}%`;
 }
 
+async function enterChat(): Promise<void> {
+  if (chatReady) return;
+  chatReady = true;
+  setUiState('ready');
+  setStatus('stateReady', 'stateReadyDetail');
+  try {
+    await initChatSession();
+  } catch (err) {
+    console.error('[LocalChat] chat init', err);
+    chatReady = false;
+    statusSection?.removeAttribute('hidden');
+    document.getElementById('chat-panel')?.setAttribute('hidden', '');
+    setUiState('unavailable');
+    setStatus('stateUnavailable', 'stateUnavailableDetail');
+  }
+}
+
 async function runAvailabilityFlow(): Promise<void> {
   if (running) return;
   running = true;
   retryBtn?.setAttribute('disabled', 'true');
 
   try {
+    if (chatReady) return;
+
     setUiState('checking');
     setStatus('stateChecking', 'stateCheckingDetail');
+    statusSection?.removeAttribute('hidden');
+    document.getElementById('chat-panel')?.setAttribute('hidden', '');
 
     if (!hasLanguageModelApi()) {
       setUiState('no-api');
@@ -69,8 +92,7 @@ async function runAvailabilityFlow(): Promise<void> {
     }
 
     if (availability === 'available' && getWarmSession()) {
-      setUiState('ready');
-      setStatus('stateReady', 'stateReadyDetail');
+      await enterChat();
       return;
     }
 
@@ -90,8 +112,7 @@ async function runAvailabilityFlow(): Promise<void> {
       setProgress(ratio);
     });
 
-    setUiState('ready');
-    setStatus('stateReady', 'stateReadyDetail');
+    await enterChat();
   } catch (err) {
     console.error('[LocalChat] model warm-up', err);
     setUiState('unavailable');
@@ -104,6 +125,7 @@ async function runAvailabilityFlow(): Promise<void> {
 
 async function refreshUi(): Promise<void> {
   applyStaticTranslations(document);
+  refreshChatLabels();
   const state = statusSection?.getAttribute('data-state') as ModelUiState | null;
   const map: Partial<Record<ModelUiState, [MessageKey, MessageKey]>> = {
     checking: ['stateChecking', 'stateCheckingDetail'],
@@ -121,6 +143,7 @@ async function refreshUi(): Promise<void> {
 
 async function boot(): Promise<void> {
   await initI18n();
+  bindChatEvents();
 
   if (localeSelect) {
     localeSelect.value = getLocale();
@@ -129,6 +152,7 @@ async function boot(): Promise<void> {
       await setLocale(next as Locale);
       document.documentElement.lang = next;
       await refreshUi();
+      onLocaleChangeForChat(next);
     });
   }
 
@@ -136,6 +160,8 @@ async function boot(): Promise<void> {
   applyStaticTranslations(document);
 
   retryBtn?.addEventListener('click', () => {
+    chatReady = false;
+    destroyWarmSession();
     void runAvailabilityFlow();
   });
 
