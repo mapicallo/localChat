@@ -50,7 +50,7 @@ docs/             → plan, arquitectura, ficha tienda
 
 | Versión | Fase |
 |---------|------|
-| 0.3.0 | Fase 2 — chat con streaming local |
+| 0.4.0 | Fase 3 — respuestas honestas sobre capacidades |
 
 Ver [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md).
 

@@ -347,6 +347,23 @@ body {
   color: var(--lc-muted);
 }
 
+.lc-chip {
+  margin-top: 14px;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--lc-accent) 45%, transparent);
+  background: color-mix(in srgb, var(--lc-accent) 12%, var(--lc-surface));
+  color: var(--lc-accent);
+}
+
+.lc-chip:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--lc-accent) 22%, var(--lc-surface));
+}
+
 .lc-messages {
   flex: 1;
   overflow-y: auto;

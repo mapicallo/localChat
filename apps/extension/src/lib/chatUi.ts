@@ -1,4 +1,9 @@
-import { applyStaticTranslations, getLocale, t, type MessageKey } from './i18n.js';
+import { getLocale, t, type MessageKey } from './i18n.js';
+import {
+  buildCapabilityReply,
+  capabilityChipLabel,
+  detectCapabilityIntent,
+} from './capabilities.js';
 import {
   createChatSession,
   destroyWarmSession,
@@ -92,6 +97,8 @@ function applyChatStaticLabels(): void {
   if (stop) stop.textContent = t('stop');
   const hint = document.getElementById('composer-hint');
   if (hint) hint.textContent = t('composerHint');
+  const capChip = document.getElementById('cap-chip');
+  if (capChip) capChip.textContent = capabilityChipLabel(getLocale());
 }
 
 export async function initChatSession(): Promise<void> {
@@ -110,6 +117,14 @@ export async function startNewChat(): Promise<void> {
   chatInput()?.focus();
 }
 
+async function replyWithText(assistantId: string, text: string): Promise<void> {
+  const idx = messages.findIndex((m) => m.id === assistantId);
+  if (idx >= 0) {
+    messages[idx] = { ...messages[idx], content: text };
+  }
+  renderMessages();
+}
+
 async function sendMessage(text: string): Promise<void> {
   const trimmed = text.trim();
   if (!trimmed || streaming) return;
@@ -123,6 +138,21 @@ async function sendMessage(text: string): Promise<void> {
 
   chatInput()!.value = '';
   setWriting(true);
+
+  const capIntent = detectCapabilityIntent(trimmed);
+  if (capIntent) {
+    try {
+      const reply = await buildCapabilityReply(capIntent, getLocale());
+      await replyWithText(assistantId, reply);
+    } catch (err) {
+      console.error('[LocalChat] capability reply', err);
+      await replyWithText(assistantId, t('errorGeneric'));
+    } finally {
+      setWriting(false);
+      chatInput()?.focus();
+    }
+    return;
+  }
 
   promptAbort = new AbortController();
 
@@ -183,6 +213,10 @@ export function bindChatEvents(): void {
       e.preventDefault();
       void sendMessage(chatInput()?.value ?? '');
     }
+  });
+
+  document.getElementById('cap-chip')?.addEventListener('click', () => {
+    void sendMessage(capabilityChipLabel(getLocale()));
   });
 }
 
