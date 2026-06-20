@@ -12,12 +12,64 @@
           <span class="lc-logo" aria-hidden="true">LC</span>
           <div>
             <h1 class="lc-title">LocalChat</h1>
-            <p class="lc-tagline">Local AI chat — no cloud upload</p>
+            <p class="lc-tagline" data-i18n="tagline">Local AI chat — no cloud upload</p>
           </div>
         </div>
+        <label class="lc-locale-wrap">
+          <span class="lc-sr-only">Language</span>
+          <select id="locale-select" class="lc-locale" aria-label="Language">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+          </select>
+        </label>
       </header>
+
       <main class="lc-main">
-        <p class="lc-placeholder" id="status">LocalChat — loading…</p>
+        <section
+          id="model-status"
+          class="lc-status"
+          data-state="checking"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div class="lc-spinner" aria-hidden="true"></div>
+
+          <h2 class="lc-status-title" id="status-title">Checking on-device AI…</h2>
+          <p class="lc-status-detail" id="status-detail">
+            Verifying Gemini Nano availability in Chrome.
+          </p>
+
+          <div id="progress-wrap" class="lc-progress-wrap" hidden>
+            <label class="lc-progress-label" id="progress-label" for="download-progress">
+              Download progress
+            </label>
+            <progress id="download-progress" class="lc-progress" max="100" value="0"></progress>
+          </div>
+
+          <ul id="requirements" class="lc-requirements" hidden>
+            <li class="lc-req-heading" id="req-title">Typical requirements</li>
+            <li id="req-chrome">Chrome 138+ (desktop)</li>
+            <li id="req-os">Windows 10/11, macOS 13+, Linux, or Chromebook Plus</li>
+            <li id="req-ram">16 GB RAM (CPU) or GPU with more than 4 GB VRAM</li>
+            <li id="req-storage">~22 GB free space on the Chrome profile volume</li>
+            <li id="req-flags">Dev: enable #prompt-api-for-gemini-nano in chrome://flags</li>
+          </ul>
+
+          <a
+            id="docs-link"
+            class="lc-docs-link"
+            href="https://developer.chrome.com/docs/ai/prompt-api"
+            target="_blank"
+            rel="noopener noreferrer"
+            hidden
+          >
+            Chrome built-in AI docs
+          </a>
+
+          <button type="button" id="retry-btn" class="lc-btn lc-btn-primary" hidden>
+            Check again
+          </button>
+        </section>
       </main>
     </div>
     <script type="module" src="/src/sidepanel.ts"></script>

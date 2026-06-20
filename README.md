@@ -50,7 +50,7 @@ docs/             → plan, arquitectura, ficha tienda
 
 | Versión | Fase |
 |---------|------|
-| 0.1.0 | Fase 0 — scaffold + side panel placeholder |
+| 0.2.0 | Fase 1 — comprobación y descarga de Gemini Nano |
 
 Ver [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md).
 
