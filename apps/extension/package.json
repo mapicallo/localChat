@@ -1,0 +1,20 @@
+{
+  "name": "@localchat/extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "node scripts/build-extension.mjs",
+    "icons": "node scripts/write-placeholder-icons.mjs",
+    "pack": "npm run build && node scripts/package-zip.mjs"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.287",
+    "@types/dom-chromium-ai": "^0.0.6",
+    "archiver": "^7.0.1",
+    "pngjs": "^7.0.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.4.2"
+  }
+}

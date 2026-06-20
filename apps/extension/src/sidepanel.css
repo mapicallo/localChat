@@ -1,0 +1,96 @@
+:root {
+  color-scheme: light dark;
+  --lc-bg: #0f172a;
+  --lc-surface: #1e293b;
+  --lc-text: #f1f5f9;
+  --lc-muted: #94a3b8;
+  --lc-accent: #3b82f6;
+  --lc-accent-soft: #1d4ed8;
+  font-family:
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --lc-bg: #f8fafc;
+    --lc-surface: #ffffff;
+    --lc-text: #0f172a;
+    --lc-muted: #64748b;
+    --lc-accent: #2563eb;
+    --lc-accent-soft: #dbeafe;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--lc-bg);
+  color: var(--lc-text);
+}
+
+.lc-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.lc-header {
+  padding: 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--lc-muted) 25%, transparent);
+  background: var(--lc-surface);
+}
+
+.lc-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lc-logo {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--lc-accent), var(--lc-accent-soft));
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.lc-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 650;
+}
+
+.lc-tagline {
+  margin: 2px 0 0;
+  font-size: 0.8125rem;
+  color: var(--lc-muted);
+}
+
+.lc-main {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+
+.lc-placeholder {
+  margin: 0;
+  max-width: 20rem;
+  text-align: center;
+  line-height: 1.5;
+  color: var(--lc-muted);
+  font-size: 0.9375rem;
+}
