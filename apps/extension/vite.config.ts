@@ -14,7 +14,7 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       input: {
-        sidepanel: path.resolve(root, 'sidepanel.html'),
+        panel: path.resolve(root, 'panel.html'),
         background: path.resolve(root, 'src/background.ts'),
       },
       output: {

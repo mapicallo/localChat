@@ -2,7 +2,7 @@
 
 **Chatea con la IA de tu Chrome, sin subir nada a la nube.**
 
-Extensión Chrome (Manifest V3) con panel lateral: chat local usando la [Prompt API](https://developer.chrome.com/docs/ai/prompt-api) y **Gemini Nano** on-device.
+Extensión Chrome (Manifest V3) con **ventana flotante** redimensionable: chat local usando la [Prompt API](https://developer.chrome.com/docs/ai/prompt-api) y **Gemini Nano** on-device.
 
 Parte del ecosistema [AI4Context](https://www.ai4context.com).
 
@@ -21,7 +21,7 @@ En `chrome://flags`:
 | `#prompt-api-for-gemini-nano` | Enabled (o multilingual) |
 | `#optimization-guide-on-device-model` | Enabled BypassPerfRequirement *(solo dev)* |
 
-Comprueba en consola del side panel: `await LanguageModel.availability()`.
+Comprueba en consola del panel: `await LanguageModel.availability()`.
 
 ## Desarrollo
 
@@ -51,6 +51,8 @@ docs/             → plan, arquitectura, ficha tienda
 | Versión | Fase |
 |---------|------|
 | 0.6.0 | Fase 5 — i18n, privacidad bilingüe, atajos UX |
+| 0.7.0 | Fase 6 — adjuntar texto seleccionado («Usar selección») |
+| 0.8.0 | Historial local — conversaciones guardadas y recuperables |
 
 Ver [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md).
 

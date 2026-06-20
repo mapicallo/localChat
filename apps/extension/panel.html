@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LocalChat</title>
+    <link rel="icon" type="image/png" sizes="48x48" href="./icons/icon48.png" />
+  </head>
+  <body>
+    <div id="app" class="lc-shell">
+      <header class="lc-brand-header">
+        <div class="lc-brand-row">
+          <div class="lc-logo">
+            <div class="lc-logo-icon" aria-hidden="true">
+              <img src="./icons/icon48.png" width="44" height="44" alt="" />
+            </div>
+            <div class="lc-logo-text">
+              <h1 class="lc-app-title">LocalChat</h1>
+              <p class="lc-app-subtitle" id="header-subtitle">By AI4Context</p>
+            </div>
+          </div>
+          <label class="lc-lang-selector" for="locale-select">
+            <span class="lc-lang-label" id="lang-label">Language</span>
+            <select id="locale-select" aria-label="Language">
+              <option value="en">English</option>
+              <option value="es">Español</option>
+            </select>
+          </label>
+        </div>
+      </header>
+
+      <main class="lc-scroll">
+        <section
+          id="model-status"
+          class="lc-status"
+          data-state="checking"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div class="lc-spinner" aria-hidden="true"></div>
+
+          <h2 class="lc-status-title" id="status-title">Checking on-device AI…</h2>
+          <p class="lc-status-detail" id="status-detail">
+            Verifying Gemini Nano availability in Chrome.
+          </p>
+
+          <div id="progress-wrap" class="lc-progress-wrap" hidden>
+            <label class="lc-progress-label" id="progress-label" for="download-progress">
+              Download progress
+            </label>
+            <progress id="download-progress" class="lc-progress" max="100" value="0"></progress>
+          </div>
+
+          <ul id="requirements" class="lc-requirements" hidden>
+            <li class="lc-req-heading" id="req-title">Typical requirements</li>
+            <li id="req-chrome">Chrome 138+ (desktop)</li>
+            <li id="req-os">Windows 10/11, macOS 13+, Linux, or Chromebook Plus</li>
+            <li id="req-ram">16 GB RAM (CPU) or GPU with more than 4 GB VRAM</li>
+            <li id="req-storage">~22 GB free space on the Chrome profile volume</li>
+            <li id="req-flags">Dev: enable #prompt-api-for-gemini-nano in chrome://flags</li>
+          </ul>
+
+          <a
+            id="docs-link"
+            class="lc-docs-link"
+            href="https://developer.chrome.com/docs/ai/prompt-api"
+            target="_blank"
+            rel="noopener noreferrer"
+            hidden
+          >
+            Chrome built-in AI docs
+          </a>
+
+          <button type="button" id="retry-btn" class="lc-btn lc-btn-primary" hidden>
+            Check again
+          </button>
+        </section>
+
+        <section id="chat-panel" class="lc-chat" hidden>
+          <div id="lc-ready-strip" class="lc-ready-strip">
+            <span class="lc-ready-strip-icon" aria-hidden="true">✓</span>
+            <span id="ready-strip-label" class="lc-ready-strip-label">Local AI is ready</span>
+          </div>
+
+          <div class="lc-chat-toolbar">
+            <div class="lc-chat-toolbar-start">
+              <button type="button" id="new-chat-btn" class="lc-btn lc-btn-ghost">
+                New chat
+              </button>
+              <button type="button" id="history-btn" class="lc-btn lc-btn-ghost">
+                History
+              </button>
+              <button
+                type="button"
+                id="attach-page-btn"
+                class="lc-btn lc-btn-ghost"
+                title="Attach visible text from the browser tab"
+              >
+                Use this page
+              </button>
+              <button
+                type="button"
+                id="attach-selection-btn"
+                class="lc-btn lc-btn-ghost"
+                title="Highlight text on the page, then click"
+              >
+                Use selection
+              </button>
+            </div>
+            <span id="writing-indicator" class="lc-writing" hidden>Writing…</span>
+          </div>
+
+          <div id="history-panel" class="lc-history-panel" hidden>
+            <div class="lc-history-head">
+              <span id="history-title" class="lc-history-title">Saved conversations</span>
+              <button type="button" id="history-close" class="lc-history-close" aria-label="Close history">
+                ×
+              </button>
+            </div>
+            <p id="saved-chats-hint" class="lc-history-hint"></p>
+            <ul id="history-list" class="lc-history-list"></ul>
+            <p id="history-empty" class="lc-history-empty" hidden>No saved conversations yet.</p>
+          </div>
+
+          <p class="lc-attach-hint" id="attach-hint"></p>
+
+          <div id="context-bar" class="lc-context-bar" hidden>
+            <span id="context-chip" class="lc-context-chip"></span>
+            <button type="button" id="context-clear" class="lc-context-clear">Remove context</button>
+          </div>
+
+          <div
+            id="chat-resize-handle"
+            class="lc-resize-handle"
+            role="separator"
+            aria-orientation="horizontal"
+            aria-label="Drag to resize the chat area"
+            tabindex="0"
+          ></div>
+
+          <div id="messages-wrap" class="lc-messages-wrap">
+            <div id="chat-loading" class="lc-chat-loading" hidden aria-live="polite" aria-busy="true">
+              <div class="lc-chat-loading-inner">
+                <div class="lc-spinner lc-chat-loading-spinner" aria-hidden="true"></div>
+                <p id="chat-loading-title" class="lc-chat-loading-title">Local AI is ready</p>
+                <p id="chat-loading-detail" class="lc-chat-loading-detail">Preparing chat…</p>
+                <div
+                  class="lc-progress-indeterminate"
+                  role="progressbar"
+                  aria-label="Loading"
+                ></div>
+              </div>
+            </div>
+            <div id="messages-empty" class="lc-welcome">
+              <p class="lc-welcome-title" id="welcome-title">Local chat on your device</p>
+              <p class="lc-welcome-body" id="welcome-body">
+                Ask anything. Replies stay on this computer—nothing is sent to the cloud.
+              </p>
+              <button type="button" id="cap-chip" class="lc-chip">What can you do?</button>
+            </div>
+            <div id="messages" class="lc-messages" role="log" aria-live="polite"></div>
+          </div>
+
+          <div class="lc-composer">
+            <textarea
+              id="chat-input"
+              class="lc-input"
+              rows="2"
+              autocomplete="off"
+              spellcheck="true"
+              aria-label="Message"
+            ></textarea>
+            <p class="lc-composer-hint" id="composer-hint">
+              Enter to send · Shift+Enter for new line
+            </p>
+            <div class="lc-composer-actions">
+              <button type="button" id="stop-btn" class="lc-btn lc-btn-ghost" hidden>Stop</button>
+              <button type="button" id="send-btn" class="lc-btn lc-btn-primary">Send</button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <div class="lc-version-strip" id="version-strip">v0.7.0</div>
+
+      <footer class="lc-site-footer" role="contentinfo">
+        <div class="lc-site-footer-inner">
+          <div class="lc-footer-brand-cluster">
+            <span class="lc-footer-accent" aria-hidden="true"></span>
+            <img
+              class="lc-footer-brand-img"
+              src="./icons/icon48.png"
+              width="32"
+              height="32"
+              alt=""
+            />
+          </div>
+          <span class="lc-footer-by">
+            <span id="footer-by-prefix">by</span> <strong>AI4Context</strong>
+          </span>
+          <span class="lc-footer-divider" aria-hidden="true"></span>
+          <a
+            class="lc-footer-support"
+            id="footer-support"
+            href="https://www.ai4context.com/mission-support"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Support</a
+          >
+          <span class="lc-footer-divider" aria-hidden="true"></span>
+          <a href="#" id="privacy-link" class="lc-footer-support">Privacy</a>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/panel.ts"></script>
+  </body>
+</html>

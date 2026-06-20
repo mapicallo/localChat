@@ -76,13 +76,14 @@ function buildMonitor(onProgress?: DownloadProgressHandler) {
 }
 
 async function createSession(
-  options: CreateOptions,
+  options: CreateOptions = {},
 ): Promise<LocalChatSession> {
+  const merged = { ...MODEL_LANG_OPTIONS, ...options };
   const LM = languageModelGlobal();
-  if (LM?.create) return LM.create(options);
+  if (LM?.create) return LM.create(merged);
 
   const factory = aiLanguageModelFactory();
-  if (factory?.create) return factory.create(options);
+  if (factory?.create) return factory.create(merged);
 
   throw new Error('NO_LANGUAGE_MODEL_API');
 }
@@ -121,17 +122,24 @@ export async function warmUpModel(onProgress?: DownloadProgressHandler): Promise
 }
 
 /** Chat session with system prompt for the selected UI locale. */
-export async function createChatSession(locale: Locale): Promise<LocalChatSession> {
+export async function createChatSession(
+  locale: Locale,
+  priorTurns: Array<{ role: 'user' | 'assistant'; content: string }> = [],
+): Promise<LocalChatSession> {
   destroyWarmSession();
 
   warmAbort = new AbortController();
   const systemText = getSystemPrompt(locale);
 
+  const historyPrompts = priorTurns
+    .filter((m) => m.content.trim())
+    .map((m) => ({ role: m.role, content: m.content }));
+
   const LM = languageModelGlobal();
   if (LM?.create) {
     warmSession = await createSession({
       signal: warmAbort.signal,
-      initialPrompts: [{ role: 'system', content: systemText }],
+      initialPrompts: [{ role: 'system', content: systemText }, ...historyPrompts],
     });
     return warmSession;
   }

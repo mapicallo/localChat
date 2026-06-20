@@ -158,7 +158,8 @@
         <h2>Single purpose</h2>
         <p>
           The Extension has one purpose: a side-panel chat assistant that runs on your device, optionally using visible
-          text from a web page you explicitly attach with <strong>Use this page</strong>.
+          text from a web page you explicitly attach with <strong>Use this page</strong> or highlighted text with
+          <strong>Use selection</strong>.
         </p>
 
         <h2>Who we are</h2>
@@ -174,6 +175,10 @@
             When you click <strong>Use this page</strong>, reads <strong>visible text</strong> from the active tab in
             the current window (via a one-time script injection you confirm) to answer your questions locally.
           </li>
+          <li>
+            When you click <strong>Use selection</strong>, reads only the <strong>text you highlighted</strong> on the
+            active tab (one-time script injection, no extra dialog) to answer locally.
+          </li>
           <li>Stores UI language preference and keeps the model session in memory while you chat.</li>
         </ul>
 
@@ -187,7 +192,7 @@
         <p>The Extension uses <code>chrome.storage.local</code> for:</p>
         <ul>
           <li>UI language preference (<code>lc_locale</code>),</li>
-          <li>no persistent archive of full chat history in v0.6 (messages live in the panel until you close or start a new chat).</li>
+          <li>saved conversations on this device (<code>lc_conversations</code>, up to 40 chats—local only, not synced to AI4Context servers).</li>
         </ul>
         <p>On-device model files are managed by Google Chrome, not by this Extension’s server.</p>
 
@@ -195,7 +200,7 @@
         <ul>
           <li><strong>Side panel:</strong> chat UI.</li>
           <li><strong>Storage:</strong> language preference.</li>
-          <li><strong>Active tab + scripting + tabs:</strong> only when you choose <strong>Use this page</strong>, to read visible text from that tab.</li>
+          <li><strong>Active tab + scripting + tabs:</strong> only when you choose <strong>Use this page</strong> or <strong>Use selection</strong>, to read visible or selected text from that tab.</li>
         </ul>
 
         <h2>Third parties</h2>
@@ -226,7 +231,8 @@
         <h2>Propósito único</h2>
         <p>
           La Extensión tiene un solo propósito: un asistente de chat en panel lateral que funciona en tu dispositivo,
-          opcionalmente usando texto visible de una página web que tú adjuntas con <strong>Usar esta página</strong>.
+          opcionalmente usando texto visible de una página web que tú adjuntas con <strong>Usar esta página</strong> o
+          texto marcado con <strong>Usar selección</strong>.
         </p>
 
         <h2>Quiénes somos</h2>
@@ -242,6 +248,10 @@
             Cuando pulsas <strong>Usar esta página</strong>, lee el <strong>texto visible</strong> de la pestaña activa
             en la ventana actual (mediante un script que tú confirmas) para responder en local.
           </li>
+          <li>
+            Cuando pulsas <strong>Usar selección</strong>, lee solo el <strong>texto que marcaste</strong> en la pestaña
+            activa (script puntual, sin diálogo extra) para responder en local.
+          </li>
           <li>Guarda la preferencia de idioma de la interfaz y mantiene la sesión del modelo en memoria mientras chateas.</li>
         </ul>
 
@@ -255,7 +265,7 @@
         <p>La Extensión usa <code>chrome.storage.local</code> para:</p>
         <ul>
           <li>preferencia de idioma (<code>lc_locale</code>),</li>
-          <li>sin archivo persistente del historial completo en v0.6 (los mensajes viven en el panel hasta cerrar o nueva conversación).</li>
+          <li>conversaciones guardadas en este dispositivo (<code>lc_conversations</code>, hasta 40 chats—solo local, sin sincronizar con servidores de AI4Context).</li>
         </ul>
         <p>Los archivos del modelo en el dispositivo los gestiona Google Chrome, no un servidor de esta Extensión.</p>
 
@@ -263,7 +273,7 @@
         <ul>
           <li><strong>Panel lateral:</strong> interfaz de chat.</li>
           <li><strong>Storage:</strong> preferencia de idioma.</li>
-          <li><strong>Pestaña activa + scripting + tabs:</strong> solo cuando eliges <strong>Usar esta página</strong>, para leer texto visible de esa pestaña.</li>
+          <li><strong>Pestaña activa + scripting + tabs:</strong> solo cuando eliges <strong>Usar esta página</strong> o <strong>Usar selección</strong>, para leer texto visible o seleccionado de esa pestaña.</li>
         </ul>
 
         <h2>Terceros</h2>

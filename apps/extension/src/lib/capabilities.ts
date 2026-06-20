@@ -126,6 +126,7 @@ CAN do now:
 • Chat with you using Gemini Nano on your device—replies stay local.
 • Stream answers in this side panel.
 • Attach visible text from the active tab (button “Use this page”) for summaries or Q&A.
+• Attach highlighted text only (button “Use selection”) for fragments you select.
 • Start a new conversation or stop a reply in progress.
 • Explain these limits when you ask.
 
@@ -137,7 +138,7 @@ CANNOT do (yet or ever):
 
 {{STATUS}}
 
-Use “Use this page”, then ask e.g. “Summarize this page”.`,
+Use “Use this page” or highlight text + “Use selection”, then ask your question.`,
     files_os: `No—I cannot read files on your computer, open folders, or run terminal commands.
 
 LocalChat only runs inside this Chrome extension. I only see messages you type here and page text you attach with “Use this page”.
@@ -149,9 +150,9 @@ Google Chrome manages the on-device model; see Chrome's built-in AI privacy noti
     offline: `After Gemini Nano is downloaded once, you can chat offline—no internet needed for each reply.
 
 The first model download does need a network connection. If Chrome removes the model (low disk space), it may download again when you open LocalChat.`,
-    page_content: `Yes—with your permission. Click “Use this page” in the toolbar to attach visible text from the active tab in this window.
+    page_content: `Yes—with your permission. Click “Use this page” for the full visible tab, or highlight text and click “Use selection” for a fragment.
 
-Then you can ask me to summarize or answer questions about that content—all processed locally. I do not read pages in the background or on other tabs unless you attach them.`,
+Then ask me to summarize or answer questions—all processed locally. I do not read pages in the background.`,
     form_fill: `Not yet. Automatic form filling is on the roadmap and will always require your confirmation before changing fields.
 
 Today I can only chat about text you send me—I cannot edit web pages.`,
@@ -166,6 +167,7 @@ SÍ puede ahora:
 • Chatear contigo con Gemini Nano en tu dispositivo—respuestas locales.
 • Mostrar respuestas en streaming en este panel.
 • Adjuntar texto visible de la pestaña activa (botón «Usar esta página») para resumir o preguntar.
+• Adjuntar solo el texto marcado (botón «Usar selección») para fragmentos que selecciones.
 • Iniciar una conversación nueva o detener una respuesta.
 • Explicar estos límites cuando preguntes.
 
@@ -177,7 +179,7 @@ NO puede (aún o nunca):
 
 {{STATUS}}
 
-Usa «Usar esta página» y luego pregunta, p. ej. «Resume esta página».`,
+Usa «Usar esta página» o marca texto + «Usar selección», y luego pregunta.`,
     files_os: `No—no puedo leer archivos de tu ordenador, abrir carpetas ni ejecutar comandos en la terminal.
 
 LocalChat solo funciona dentro de esta extensión de Chrome. Solo veo mensajes que escribes aquí y texto de página que adjuntas con «Usar esta página».
@@ -189,9 +191,9 @@ Chrome gestiona el modelo en el dispositivo; consulta sus avisos de privacidad p
     offline: `Tras descargar Gemini Nano una vez, puedes chatear sin internet—cada respuesta no necesita conexión.
 
 La primera descarga del modelo sí requiere red. Si Chrome elimina el modelo (poco espacio), puede volver a descargarse al abrir LocalChat.`,
-    page_content: `Sí—con tu permiso. Pulsa «Usar esta página» en la barra para adjuntar el texto visible de la pestaña activa en esta ventana.
+    page_content: `Sí—con tu permiso. Pulsa «Usar esta página» para la pestaña visible, o marca texto y «Usar selección» para un fragmento.
 
-Después puedes pedir un resumen o preguntar sobre ese contenido—todo en local. No leo páginas en segundo plano ni otras pestañas sin que las adjuntes.`,
+Luego pregunta o pide un resumen—todo en local. No leo páginas en segundo plano.`,
     form_fill: `Aún no. Rellenar formularios está en la hoja de ruta y siempre pedirá tu confirmación antes de tocar campos.
 
 Hoy solo puedo conversar sobre texto que me envíes—no edito páginas web.`,

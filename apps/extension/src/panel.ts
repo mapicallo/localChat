@@ -1,4 +1,4 @@
-import './sidepanel.css';
+import './panel.css';
 import { bindChatEvents, initChatSession, onLocaleChangeForChat, refreshChatLabels } from './lib/chatUi.js';
 import { applyStaticTranslations, getLocale, initI18n, setLocale, t, type MessageKey } from './lib/i18n.js';
 import { openPrivacyPolicy } from './lib/privacyUrl.js';
@@ -10,7 +10,13 @@ import {
   warmUpModel,
   type ModelUiState,
 } from './lib/model.js';
+import { initChatMessagesResize } from './lib/chatLayout.js';
 import type { Locale } from './lib/storage.js';
+
+function updateReadyStrip(): void {
+  const label = document.getElementById('ready-strip-label');
+  if (label) label.textContent = t('stateReady');
+}
 
 const statusSection = document.getElementById('model-status') as HTMLElement | null;
 const statusTitle = document.getElementById('status-title');
@@ -22,6 +28,7 @@ const retryBtn = document.getElementById('retry-btn') as HTMLButtonElement | nul
 const localeSelect = document.getElementById('locale-select') as HTMLSelectElement | null;
 const spinner = document.querySelector<HTMLElement>('.lc-spinner');
 const docsLink = document.getElementById('docs-link') as HTMLAnchorElement | null;
+const versionStrip = document.getElementById('version-strip');
 
 let running = false;
 let chatReady = false;
@@ -33,7 +40,12 @@ function setUiState(state: ModelUiState): void {
   if (progressWrap) progressWrap.hidden = state !== 'downloading';
   if (requirements) requirements.hidden = state !== 'unavailable' && state !== 'no-api';
   if (docsLink) docsLink.hidden = state !== 'unavailable' && state !== 'no-api';
-  if (retryBtn) retryBtn.hidden = state === 'checking' || state === 'downloading';
+  if (retryBtn) {
+    retryBtn.hidden = state !== 'unavailable' && state !== 'no-api';
+  }
+  if (statusDetail) {
+    statusDetail.hidden = state === 'ready';
+  }
 }
 
 function setStatus(titleKey: MessageKey, detailKey: MessageKey): void {
@@ -51,8 +63,6 @@ function setProgress(ratio: number): void {
 async function enterChat(): Promise<void> {
   if (chatReady) return;
   chatReady = true;
-  setUiState('ready');
-  setStatus('stateReady', 'stateReadyDetail');
   try {
     await initChatSession();
   } catch (err) {
@@ -127,6 +137,7 @@ async function runAvailabilityFlow(): Promise<void> {
 async function refreshUi(): Promise<void> {
   applyStaticTranslations(document);
   refreshChatLabels();
+  updateReadyStrip();
   const state = statusSection?.getAttribute('data-state') as ModelUiState | null;
   const map: Partial<Record<ModelUiState, [MessageKey, MessageKey]>> = {
     checking: ['stateChecking', 'stateCheckingDetail'],
@@ -145,6 +156,11 @@ async function refreshUi(): Promise<void> {
 async function boot(): Promise<void> {
   await initI18n();
   bindChatEvents();
+  await initChatMessagesResize();
+
+  if (versionStrip) {
+    versionStrip.textContent = `v${chrome.runtime.getManifest().version}`;
+  }
 
   if (localeSelect) {
     localeSelect.value = getLocale();
