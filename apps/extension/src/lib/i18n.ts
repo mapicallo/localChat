@@ -33,7 +33,16 @@ export type MessageKey =
   | 'errorGeneric'
   | 'errorQuota'
   | 'welcomeTitle'
-  | 'welcomeBody';
+  | 'welcomeBody'
+  | 'useThisPage'
+  | 'attachPageConfirm'
+  | 'attachPageFirst'
+  | 'removeContext'
+  | 'errorPageRestricted'
+  | 'errorPageEmpty'
+  | 'errorPageNoTab'
+  | 'errorPageScript'
+  | 'pageAttachedHint';
 
 const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
   en: {
@@ -73,6 +82,17 @@ const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
     errorQuota: 'Context limit reached. Start a new chat to continue.',
     welcomeTitle: 'Local chat on your device',
     welcomeBody: 'Ask anything. Replies stay on this computer—nothing is sent to the cloud.',
+    useThisPage: 'Use this page',
+    attachPageConfirm:
+      'LocalChat will read visible text from the active tab in this window (not your files). Continue?',
+    attachPageFirst:
+      'Attach the page first: click “Use this page” in the toolbar, then ask your question (e.g. summarize).',
+    removeContext: 'Remove page context',
+    errorPageRestricted: 'This page cannot be read (browser internal or store page). Open a normal website and try again.',
+    errorPageEmpty: 'No readable text found on this tab.',
+    errorPageNoTab: 'No active tab found in this window.',
+    errorPageScript: 'Could not read this tab. Reload the page and try again.',
+    pageAttachedHint: 'Page attached. Ask a question or type “Summarize this page”.',
   },
   es: {
     tagline: 'Chat con IA local — sin subir nada a la nube',
@@ -111,6 +131,18 @@ const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
     errorQuota: 'Límite de contexto alcanzado. Abre una conversación nueva para seguir.',
     welcomeTitle: 'Chat local en tu equipo',
     welcomeBody: 'Pregunta lo que quieras. Las respuestas se quedan en este ordenador—nada va a la nube.',
+    useThisPage: 'Usar esta página',
+    attachPageConfirm:
+      'LocalChat leerá el texto visible de la pestaña activa en esta ventana (no tus archivos). ¿Continuar?',
+    attachPageFirst:
+      'Primero adjunta la página: pulsa «Usar esta página» en la barra y luego pregunta (p. ej. «Resume esta página»).',
+    removeContext: 'Quitar contexto de página',
+    errorPageRestricted:
+      'No se puede leer esta página (interna del navegador o tienda). Abre un sitio web normal e inténtalo de nuevo.',
+    errorPageEmpty: 'No hay texto legible en esta pestaña.',
+    errorPageNoTab: 'No hay pestaña activa en esta ventana.',
+    errorPageScript: 'No se pudo leer la pestaña. Recarga la página e inténtalo de nuevo.',
+    pageAttachedHint: 'Página adjunta. Pregunta lo que quieras o escribe «Resume esta página».',
   },
 };
 
@@ -178,4 +210,10 @@ export function applyStaticTranslations(root: ParentNode): void {
 
   const welcomeBody = root.querySelector<HTMLElement>('#welcome-body');
   if (welcomeBody) welcomeBody.textContent = t('welcomeBody');
+
+  const attachBtn = root.querySelector<HTMLButtonElement>('#attach-page-btn');
+  if (attachBtn) attachBtn.textContent = t('useThisPage');
+
+  const clearCtx = root.querySelector<HTMLButtonElement>('#context-clear');
+  if (clearCtx) clearCtx.setAttribute('aria-label', t('removeContext'));
 }

@@ -1,7 +1,7 @@
 # LocalChat — Capacidades (referencia canónica)
 
 Documento de verdad para respuestas honestas del asistente.  
-**Versión extensión:** 0.4.x · **Actualizar** cuando se implemente Fase 4+.
+**Versión extensión:** 0.5.x · **Actualizar** al añadir features.
 
 ---
 
@@ -11,11 +11,13 @@ Documento de verdad para respuestas honestas del asistente.
 |-----------|---------|
 | Chat local | Conversación con Gemini Nano en el dispositivo (Prompt API). |
 | Streaming | Respuestas en tiempo real en el panel lateral. |
-| Privacidad del chat | El texto del chat no se envía a servidores de AI4Context. |
-| Nueva conversación | Reinicia la sesión del modelo y borra el hilo visible. |
-| Detener respuesta | Cancela una generación en curso. |
+| **Contexto de pestaña** | Botón **«Usar esta página»** — lee texto visible de la pestaña activa (con confirmación). |
+| Resumir / Q&A sobre página | Tras adjuntar contexto, preguntar p. ej. «Resume esta página». |
+| Privacidad del chat | El texto no se envía a servidores de AI4Context. |
+| Nueva conversación | Reinicia sesión del modelo y borra hilo + contexto adjunto. |
+| Detener respuesta | Cancela generación en curso. |
 | UI bilingüe | Interfaz en español e inglés. |
-| Explicar límites | Responder con precisión qué puede y qué no puede hacer. |
+| Explicar límites | Respuestas precisas sobre capacidades (catálogo en código). |
 
 ---
 
@@ -27,11 +29,22 @@ Documento de verdad para respuestas honestas del asistente.
 | Terminal / comandos | No ejecuta PowerShell, bash ni scripts del sistema. |
 | Otras apps | Solo existe dentro de la extensión Chrome. |
 | Nube del desarrollador | No sube conversaciones a backend AI4Context. |
-| Facturación oficial | No sustituye dashboards de OpenAI/Google/Anthropic. |
-| **Página web activa** | **Fase 4** — aún no implementado. |
+| Páginas restringidas | No lee `chrome://`, Web Store, extensiones, etc. |
+| Fondo / otras pestañas | No vigila pestañas sin acción explícita del usuario. |
 | **Texto seleccionado** | **Fase 6** — aún no implementado. |
 | **Rellenar formularios** | **Backlog** — aún no implementado. |
 | Todas las máquinas | Requiere Chrome desktop compatible y modelo descargado. |
+
+---
+
+## Flujo «Usar esta página»
+
+1. Usuario abre un sitio web normal (http/https).
+2. Abre LocalChat (panel lateral).
+3. Pulsa **Usar esta página** → confirma el diálogo.
+4. Aparece chip **Contexto: [título]**.
+5. Escribe pregunta o «Resume esta página».
+6. Gemini Nano procesa texto adjunto **solo en local** (hasta ~40k caracteres; puede truncar).
 
 ---
 
@@ -42,16 +55,6 @@ Documento de verdad para respuestas honestas del asistente.
 
 ---
 
-## Preguntas frecuentes (respuesta corta)
-
-- **¿Qué puedes hacer?** → Chat local + explicar límites; ver tabla arriba.
-- **¿Lees mis archivos?** → No.
-- **¿Subes datos a la nube?** → No a servidores AI4Context; inferencia local en Chrome.
-- **¿Resumes esta página?** → Próximamente (Fase 4); hoy solo texto que escribes en el chat.
-- **¿Funcionas sin internet?** → Sí, después de tener el modelo en el equipo.
-
----
-
 ## Mantenimiento
 
-Al añadir una feature (p. ej. contexto de pestaña), mover la fila de «NO» a «SÍ» aquí y en `apps/extension/src/lib/capabilities.ts`.
+Actualizar este archivo y `apps/extension/src/lib/capabilities.ts` cuando cambien las features.

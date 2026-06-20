@@ -49,11 +49,10 @@ const OFFLINE_PATTERNS: RegExp[] = [
   /\bfunciona(r)? sin (internet|conexi[oó]n)\b/i,
 ];
 
-const PAGE_PATTERNS: RegExp[] = [
-  /\b(read|summarize|summary|analyse|analyze).{0,30}(this )?(page|tab|website|web page|article|site)\b/i,
-  /\b(leer|resume|resumir|analiza).{0,30}(esta )?(p[aá]gina|pesta[nñ]a|web|sitio|art[ií]culo)\b/i,
-  /\bwhat (is|does) this page say\b/i,
-  /\bqu[eé] dice esta p[aá]gina\b/i,
+const PAGE_CAPABILITY_PATTERNS: RegExp[] = [
+  /\b(can you|could you|are you able|do you).{0,30}(read|summarize|see|access).{0,30}(web )?(pages?|tabs?|websites?|articles?)\b/i,
+  /\b(puedes|puede?s|eres capaz).{0,30}(leer|resumir|ver|acceder).{0,30}(p[aá]ginas?|pesta[nñ]as?|webs?|art[ií]culos?|sitios?)\b/i,
+  /\bsupport.{0,20}(page|tab) (context|reading)\b/i,
 ];
 
 const FORM_PATTERNS: RegExp[] = [
@@ -81,7 +80,7 @@ export function detectCapabilityIntent(text: string): CapabilityIntent | null {
 
   if (matchesAny(n, FILES_PATTERNS)) return 'files_os';
   if (matchesAny(n, FORM_PATTERNS)) return 'form_fill';
-  if (matchesAny(n, PAGE_PATTERNS)) return 'page_content';
+  if (matchesAny(n, PAGE_CAPABILITY_PATTERNS)) return 'page_content';
   if (matchesAny(n, CLOUD_PATTERNS)) return 'cloud_privacy';
   if (matchesAny(n, OFFLINE_PATTERNS)) return 'offline';
   if (matchesAny(n, BROWSER_SCOPE_PATTERNS)) return 'browser_scope';
@@ -89,9 +88,10 @@ export function detectCapabilityIntent(text: string): CapabilityIntent | null {
 
   if (/\b(can you|are you able|do you|puedes|puede?s|eres capaz)\b/i.test(n)) {
     if (/\b(file|archivo|folder|carpeta|disk|disco|terminal)\b/i.test(n)) return 'files_os';
-    if (/\b(page|p[aá]gina|website|web|tab|pesta[nñ]a)\b/i.test(n)) return 'page_content';
     if (/\b(form|formulario|field|campo)\b/i.test(n)) return 'form_fill';
     if (/\b(cloud|nube|server|servidor|upload|subir)\b/i.test(n)) return 'cloud_privacy';
+    if (/\b(page|p[aá]gina|website|web|tab|pesta[nñ]a)\b/i.test(n) && /\b(can|could|puedes|capaz|support)\b/i.test(n))
+      return 'page_content';
   }
 
   return null;
@@ -125,22 +125,22 @@ const REPLIES: Record<Locale, Record<CapabilityIntent, string>> = {
 CAN do now:
 • Chat with you using Gemini Nano on your device—replies stay local.
 • Stream answers in this side panel.
+• Attach visible text from the active tab (button “Use this page”) for summaries or Q&A.
 • Start a new conversation or stop a reply in progress.
 • Explain these limits when you ask.
 
 CANNOT do (yet or ever):
 • Read your PC files, folders, or terminal—never.
 • Send your chat to AI4Context servers—no developer cloud for messages.
-• Summarize the web page you are viewing—not yet (planned next).
+• Read pages without your explicit click—no background tab monitoring.
 • Fill web forms automatically—not yet.
-• Monitor other browser tabs on its own.
 
 {{STATUS}}
 
-Ask me anything in plain text. For page summaries, that feature is coming soon.`,
+Use “Use this page”, then ask e.g. “Summarize this page”.`,
     files_os: `No—I cannot read files on your computer, open folders, or run terminal commands.
 
-LocalChat only runs inside this Chrome extension. I only see messages you type here (and in future updates, page text you explicitly choose to share).
+LocalChat only runs inside this Chrome extension. I only see messages you type here and page text you attach with “Use this page”.
 
 Your files on disk stay private from this extension.`,
     cloud_privacy: `Your chat text is processed locally by Gemini Nano in Chrome. LocalChat does not upload your conversations to AI4Context servers.
@@ -149,17 +149,15 @@ Google Chrome manages the on-device model; see Chrome's built-in AI privacy noti
     offline: `After Gemini Nano is downloaded once, you can chat offline—no internet needed for each reply.
 
 The first model download does need a network connection. If Chrome removes the model (low disk space), it may download again when you open LocalChat.`,
-    page_content: `Not yet. LocalChat v0.4 cannot read the active tab on its own.
+    page_content: `Yes—with your permission. Click “Use this page” in the toolbar to attach visible text from the active tab in this window.
 
-Planned soon: a button to inject page text you approve, then summarize or Q&A locally.
-
-Right now I only answer from what you type in this chat.`,
+Then you can ask me to summarize or answer questions about that content—all processed locally. I do not read pages in the background or on other tabs unless you attach them.`,
     form_fill: `Not yet. Automatic form filling is on the roadmap and will always require your confirmation before changing fields.
 
 Today I can only chat about text you send me—I cannot edit web pages.`,
     browser_scope: `I do not watch your whole browser or other tabs in the background.
 
-LocalChat is limited to this side panel and (in a future update) content you explicitly attach from the active tab. I cannot browse history or bookmarks on my own.`,
+LocalChat is limited to this side panel and page text you explicitly attach from the active tab. I cannot browse history or bookmarks on my own.`,
   },
   es: {
     general: `Esto es lo que LocalChat puede hacer hoy (con honestidad):
@@ -167,22 +165,22 @@ LocalChat is limited to this side panel and (in a future update) content you exp
 SÍ puede ahora:
 • Chatear contigo con Gemini Nano en tu dispositivo—respuestas locales.
 • Mostrar respuestas en streaming en este panel.
+• Adjuntar texto visible de la pestaña activa (botón «Usar esta página») para resumir o preguntar.
 • Iniciar una conversación nueva o detener una respuesta.
 • Explicar estos límites cuando preguntes.
 
 NO puede (aún o nunca):
 • Leer archivos, carpetas o terminal de tu PC—nunca.
 • Enviar tu chat a servidores de AI4Context—sin nube del desarrollador.
-• Resumir la página web que estás viendo—aún no (próximamente).
+• Leer páginas sin tu clic explícito—sin vigilar pestañas en segundo plano.
 • Rellenar formularios automáticamente—aún no.
-• Vigilar otras pestañas por su cuenta.
 
 {{STATUS}}
 
-Pregúntame lo que quieras por texto. Para resumir páginas, esa función llegará pronto.`,
+Usa «Usar esta página» y luego pregunta, p. ej. «Resume esta página».`,
     files_os: `No—no puedo leer archivos de tu ordenador, abrir carpetas ni ejecutar comandos en la terminal.
 
-LocalChat solo funciona dentro de esta extensión de Chrome. Solo veo mensajes que escribes aquí (y en futuras versiones, texto de página que tú compartas explícitamente).
+LocalChat solo funciona dentro de esta extensión de Chrome. Solo veo mensajes que escribes aquí y texto de página que adjuntas con «Usar esta página».
 
 Tus archivos en disco no los lee esta extensión.`,
     cloud_privacy: `Tu chat se procesa en local con Gemini Nano en Chrome. LocalChat no sube tus conversaciones a servidores de AI4Context.
@@ -191,17 +189,15 @@ Chrome gestiona el modelo en el dispositivo; consulta sus avisos de privacidad p
     offline: `Tras descargar Gemini Nano una vez, puedes chatear sin internet—cada respuesta no necesita conexión.
 
 La primera descarga del modelo sí requiere red. Si Chrome elimina el modelo (poco espacio), puede volver a descargarse al abrir LocalChat.`,
-    page_content: `Aún no. LocalChat v0.4 no puede leer la pestaña activa por sí solo.
+    page_content: `Sí—con tu permiso. Pulsa «Usar esta página» en la barra para adjuntar el texto visible de la pestaña activa en esta ventana.
 
-Próximamente: un botón para inyectar texto de página que tú apruebes y resumir o responder en local.
-
-Ahora solo respondo a lo que escribes en este chat.`,
+Después puedes pedir un resumen o preguntar sobre ese contenido—todo en local. No leo páginas en segundo plano ni otras pestañas sin que las adjuntes.`,
     form_fill: `Aún no. Rellenar formularios está en la hoja de ruta y siempre pedirá tu confirmación antes de tocar campos.
 
 Hoy solo puedo conversar sobre texto que me envíes—no edito páginas web.`,
     browser_scope: `No vigilo todo el navegador ni otras pestañas en segundo plano.
 
-LocalChat se limita a este panel y (en una futura versión) al contenido que tú adjuntes de la pestaña activa. No puedo explorar historial o marcadores por mi cuenta.`,
+LocalChat se limita a este panel y al texto de página que tú adjuntes de la pestaña activa. No puedo explorar historial o marcadores por mi cuenta.`,
   },
 };
 

@@ -9,6 +9,13 @@ import {
   destroyWarmSession,
   promptStreamingChat,
 } from './model.js';
+import {
+  buildPromptWithPageContext,
+  extractActiveTabText,
+  formatContextChip,
+  isPageActionRequest,
+  type PageContext,
+} from './pageContext.js';
 import type { Locale } from './storage.js';
 
 export type ChatRole = 'user' | 'assistant' | 'error';
@@ -22,6 +29,7 @@ export interface ChatMessage {
 let messages: ChatMessage[] = [];
 let streaming = false;
 let promptAbort: AbortController | null = null;
+let attachedPage: PageContext | null = null;
 
 const chatPanel = () => document.getElementById('chat-panel');
 const modelStatus = () => document.getElementById('model-status');
@@ -32,6 +40,8 @@ const sendBtn = () => document.getElementById('send-btn') as HTMLButtonElement |
 const stopBtn = () => document.getElementById('stop-btn') as HTMLButtonElement | null;
 const newChatBtn = () => document.getElementById('new-chat-btn') as HTMLButtonElement | null;
 const writingIndicator = () => document.getElementById('writing-indicator');
+const contextBar = () => document.getElementById('context-bar');
+const contextChip = () => document.getElementById('context-chip');
 
 function msgId(): string {
   return `m-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -99,6 +109,64 @@ function applyChatStaticLabels(): void {
   if (hint) hint.textContent = t('composerHint');
   const capChip = document.getElementById('cap-chip');
   if (capChip) capChip.textContent = capabilityChipLabel(getLocale());
+  const attachBtn = document.getElementById('attach-page-btn');
+  if (attachBtn) attachBtn.textContent = t('useThisPage');
+  updateContextBar();
+}
+
+function updateContextBar(): void {
+  const bar = contextBar();
+  const chip = contextChip();
+  if (!bar || !chip) return;
+
+  if (attachedPage) {
+    bar.hidden = false;
+    chip.textContent = formatContextChip(attachedPage.title, getLocale());
+  } else {
+    bar.hidden = true;
+    chip.textContent = '';
+  }
+}
+
+function clearAttachedPage(): void {
+  attachedPage = null;
+  updateContextBar();
+}
+
+function pageExtractErrorMessage(error: string): string {
+  switch (error) {
+    case 'restricted':
+      return t('errorPageRestricted');
+    case 'empty':
+      return t('errorPageEmpty');
+    case 'no_tab':
+      return t('errorPageNoTab');
+    default:
+      return t('errorPageScript');
+  }
+}
+
+async function attachActivePage(): Promise<void> {
+  if (streaming) return;
+
+  if (!window.confirm(t('attachPageConfirm'))) return;
+
+  const result = await extractActiveTabText();
+  if (!result.ok) {
+    messages.push({
+      id: msgId(),
+      role: 'error',
+      content: pageExtractErrorMessage(result.error),
+    });
+    renderMessages();
+    return;
+  }
+
+  attachedPage = result.context;
+  updateContextBar();
+  messages.push({ id: msgId(), role: 'assistant', content: t('pageAttachedHint') });
+  renderMessages();
+  chatInput()?.focus();
 }
 
 export async function initChatSession(): Promise<void> {
@@ -111,6 +179,7 @@ export async function initChatSession(): Promise<void> {
 export async function startNewChat(): Promise<void> {
   if (streaming) return;
   promptAbort?.abort();
+  clearAttachedPage();
   await createChatSession(getLocale());
   messages = [];
   renderMessages();
@@ -139,6 +208,13 @@ async function sendMessage(text: string): Promise<void> {
   chatInput()!.value = '';
   setWriting(true);
 
+  if (isPageActionRequest(trimmed) && !attachedPage) {
+    await replyWithText(assistantId, t('attachPageFirst'));
+    setWriting(false);
+    chatInput()?.focus();
+    return;
+  }
+
   const capIntent = detectCapabilityIntent(trimmed);
   if (capIntent) {
     try {
@@ -155,10 +231,13 @@ async function sendMessage(text: string): Promise<void> {
   }
 
   promptAbort = new AbortController();
+  const modelPrompt = attachedPage
+    ? buildPromptWithPageContext(trimmed, attachedPage)
+    : trimmed;
 
   try {
     await promptStreamingChat(
-      trimmed,
+      modelPrompt,
       (accumulated) => {
         const idx = messages.findIndex((m) => m.id === assistantId);
         if (idx >= 0) {
@@ -218,6 +297,15 @@ export function bindChatEvents(): void {
   document.getElementById('cap-chip')?.addEventListener('click', () => {
     void sendMessage(capabilityChipLabel(getLocale()));
   });
+
+  document.getElementById('attach-page-btn')?.addEventListener('click', () => {
+    void attachActivePage();
+  });
+
+  document.getElementById('context-clear')?.addEventListener('click', () => {
+    clearAttachedPage();
+    chatInput()?.focus();
+  });
 }
 
 export function refreshChatLabels(): void {
@@ -232,5 +320,6 @@ export function onLocaleChangeForChat(_locale: Locale): void {
 
 export function teardownChat(): void {
   promptAbort?.abort();
+  clearAttachedPage();
   destroyWarmSession();
 }

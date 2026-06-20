@@ -73,10 +73,22 @@
 
         <section id="chat-panel" class="lc-chat" hidden>
           <div class="lc-chat-toolbar">
-            <button type="button" id="new-chat-btn" class="lc-btn lc-btn-ghost">
-              New chat
-            </button>
+            <div class="lc-chat-toolbar-start">
+              <button type="button" id="new-chat-btn" class="lc-btn lc-btn-ghost">
+                New chat
+              </button>
+              <button type="button" id="attach-page-btn" class="lc-btn lc-btn-ghost">
+                Use this page
+              </button>
+            </div>
             <span id="writing-indicator" class="lc-writing" hidden>Writing…</span>
+          </div>
+
+          <div id="context-bar" class="lc-context-bar" hidden>
+            <span id="context-chip" class="lc-context-chip"></span>
+            <button type="button" id="context-clear" class="lc-context-clear" aria-label="Remove page context">
+              ×
+            </button>
           </div>
 
           <div id="messages-wrap" class="lc-messages-wrap">

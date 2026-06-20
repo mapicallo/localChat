@@ -314,6 +314,49 @@ body {
   background: var(--lc-surface);
 }
 
+.lc-chat-toolbar-start {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lc-context-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: color-mix(in srgb, var(--lc-accent) 10%, var(--lc-surface));
+  border-bottom: 1px solid color-mix(in srgb, var(--lc-accent) 25%, transparent);
+}
+
+.lc-context-chip {
+  flex: 1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--lc-accent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lc-context-clear {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--lc-muted);
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lc-context-clear:hover {
+  background: color-mix(in srgb, var(--lc-muted) 15%, transparent);
+  color: var(--lc-text);
+}
+
 .lc-writing {
   font-size: 0.75rem;
   color: var(--lc-muted);

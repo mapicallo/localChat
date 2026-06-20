@@ -50,7 +50,7 @@ docs/             → plan, arquitectura, ficha tienda
 
 | Versión | Fase |
 |---------|------|
-| 0.4.0 | Fase 3 — respuestas honestas sobre capacidades |
+| 0.5.0 | Fase 4 — contexto de pestaña activa («Usar esta página») |
 
 Ver [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md).
 
