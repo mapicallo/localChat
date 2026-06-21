@@ -1,6 +1,7 @@
 /**
  * Prompt API / Gemini Nano — availability, session lifecycle, streaming prompts.
  */
+import type { PromptInput } from './chatContext.js';
 import { MODEL_LANG_OPTIONS } from './modelOptions.js';
 import { getSystemPrompt } from './systemPrompt.js';
 import type { Locale } from './storage.js';
@@ -18,9 +19,9 @@ export type AvailabilityKind = 'available' | 'downloadable' | 'downloading' | 'u
 export type DownloadProgressHandler = (loadedRatio: number) => void;
 
 export type LocalChatSession = {
-  prompt?: (input: string, options?: { signal?: AbortSignal }) => Promise<string>;
+  prompt?: (input: PromptInput, options?: { signal?: AbortSignal }) => Promise<string>;
   promptStreaming: (
-    input: string,
+    input: PromptInput,
     options?: { signal?: AbortSignal },
   ) => ReadableStream<string> & AsyncIterable<string>;
   destroy?: () => void;
@@ -167,14 +168,14 @@ export function destroyWarmSession(): void {
 }
 
 export async function promptStreamingChat(
-  text: string,
+  input: PromptInput,
   onUpdate: (accumulated: string) => void,
   signal?: AbortSignal,
 ): Promise<string> {
   const session = warmSession;
   if (!session?.promptStreaming) throw new Error('NO_SESSION');
 
-  const stream = session.promptStreaming(text.trim(), { signal });
+  const stream = session.promptStreaming(input, { signal });
   let full = '';
 
   for await (const chunk of stream) {

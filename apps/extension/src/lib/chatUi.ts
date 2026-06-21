@@ -10,14 +10,21 @@ import {
   promptStreamingChat,
 } from './model.js';
 import {
-  buildPromptWithPageContext,
+  buildPromptWithContext,
   extractActiveTabSelection,
   extractActiveTabText,
   formatContextChip,
+  isDocumentActionRequest,
+  isImageActionRequest,
   isPageActionRequest,
   isSelectionActionRequest,
-  type PageContext,
+  type ChatContext,
 } from './pageContext.js';
+import {
+  fileErrorMessage,
+  parseDocumentFile,
+  parseImageFile,
+} from './fileContext.js';
 import {
   deleteConversation,
   formatConversationWhen,
@@ -44,7 +51,8 @@ import type { Locale } from './storage.js';
 let messages: ChatMessage[] = [];
 let streaming = false;
 let promptAbort: AbortController | null = null;
-let attachedPage: PageContext | null = null;
+let attachedContext: ChatContext | null = null;
+let contextThumbUrl: string | null = null;
 let currentConversationId: string | null = null;
 let conversationCreatedAt = Date.now();
 
@@ -141,7 +149,7 @@ async function beginFreshChat(): Promise<void> {
   currentConversationId = newConversationId();
   conversationCreatedAt = Date.now();
   messages = [];
-  clearAttachedPage();
+  clearAttachedContext();
   await createChatSession(getLocale());
   renderMessages();
   await setActiveConversationId(currentConversationId);
@@ -160,7 +168,7 @@ async function loadSavedConversation(
     role: m.role,
     content: m.content,
   }));
-  clearAttachedPage();
+  clearAttachedContext();
   try {
     await createChatSession(saved.locale, saved.messages);
     renderMessages();
@@ -281,6 +289,16 @@ function applyChatStaticLabels(): void {
     selBtn.textContent = t('useSelection');
     selBtn.title = t('useSelectionHint');
   }
+  const attachDocBtn = document.getElementById('attach-document-btn');
+  if (attachDocBtn) {
+    attachDocBtn.textContent = t('attachDocument');
+    attachDocBtn.title = t('attachDocumentHint');
+  }
+  const attachImgBtn = document.getElementById('attach-image-btn');
+  if (attachImgBtn) {
+    attachImgBtn.textContent = t('attachImage');
+    attachImgBtn.title = t('attachImageHint');
+  }
   const attachHint = document.getElementById('attach-hint');
   if (attachHint) attachHint.textContent = t('attachToolsHint');
   const resizeHandle = document.getElementById('chat-resize-handle');
@@ -292,22 +310,46 @@ function applyChatStaticLabels(): void {
   updateContextBar();
 }
 
-function updateContextBar(): void {
-  const bar = contextBar();
-  const chip = contextChip();
-  if (!bar || !chip) return;
-
-  if (attachedPage) {
-    bar.hidden = false;
-    chip.textContent = formatContextChip(attachedPage, getLocale());
-  } else {
-    bar.hidden = true;
-    chip.textContent = '';
+function revokeContextThumb(): void {
+  if (contextThumbUrl) {
+    URL.revokeObjectURL(contextThumbUrl);
+    contextThumbUrl = null;
   }
 }
 
-function clearAttachedPage(): void {
-  attachedPage = null;
+function updateContextBar(): void {
+  const bar = contextBar();
+  const chip = contextChip();
+  const thumb = document.getElementById('context-thumb') as HTMLImageElement | null;
+  if (!bar || !chip) return;
+
+  revokeContextThumb();
+
+  if (attachedContext) {
+    bar.hidden = false;
+    chip.textContent = formatContextChip(attachedContext, getLocale());
+    if (thumb) {
+      if (attachedContext.kind === 'image' && attachedContext.imageBlob) {
+        contextThumbUrl = URL.createObjectURL(attachedContext.imageBlob);
+        thumb.src = contextThumbUrl;
+        thumb.hidden = false;
+      } else {
+        thumb.hidden = true;
+        thumb.removeAttribute('src');
+      }
+    }
+  } else {
+    bar.hidden = true;
+    chip.textContent = '';
+    if (thumb) {
+      thumb.hidden = true;
+      thumb.removeAttribute('src');
+    }
+  }
+}
+
+function clearAttachedContext(): void {
+  attachedContext = null;
   updateContextBar();
 }
 
@@ -342,7 +384,7 @@ async function attachActivePage(): Promise<void> {
     return;
   }
 
-  attachedPage = result.context;
+  attachedContext = result.context;
   updateContextBar();
   messages.push({ id: msgId(), role: 'assistant', content: t('pageAttachedHint') });
   renderMessages();
@@ -364,9 +406,53 @@ async function attachActiveSelection(): Promise<void> {
     return;
   }
 
-  attachedPage = result.context;
+  attachedContext = result.context;
   updateContextBar();
   messages.push({ id: msgId(), role: 'assistant', content: t('selectionAttachedHint') });
+  renderMessages();
+  void persistCurrentConversation();
+  chatInput()?.focus();
+}
+
+async function attachDocumentFromFile(file: File): Promise<void> {
+  if (streaming) return;
+
+  const result = await parseDocumentFile(file);
+  if (!result.ok) {
+    messages.push({
+      id: msgId(),
+      role: 'error',
+      content: fileErrorMessage(result.error, t),
+    });
+    renderMessages();
+    return;
+  }
+
+  attachedContext = result.context;
+  updateContextBar();
+  messages.push({ id: msgId(), role: 'assistant', content: t('documentAttachedHint') });
+  renderMessages();
+  void persistCurrentConversation();
+  chatInput()?.focus();
+}
+
+async function attachImageFromFile(file: File): Promise<void> {
+  if (streaming) return;
+
+  const result = await parseImageFile(file);
+  if (!result.ok) {
+    messages.push({
+      id: msgId(),
+      role: 'error',
+      content: fileErrorMessage(result.error, t),
+    });
+    renderMessages();
+    return;
+  }
+
+  attachedContext = result.context;
+  updateContextBar();
+  messages.push({ id: msgId(), role: 'assistant', content: t('imageAttachedHint') });
   renderMessages();
   void persistCurrentConversation();
   chatInput()?.focus();
@@ -420,7 +506,7 @@ async function sendMessage(text: string): Promise<void> {
   chatInput()!.value = '';
   setWriting(true);
 
-  if (isPageActionRequest(trimmed) && !attachedPage) {
+  if (isPageActionRequest(trimmed) && (!attachedContext || attachedContext.kind !== 'page')) {
     await replyWithText(assistantId, t('attachPageFirst'));
     setWriting(false);
     void persistCurrentConversation();
@@ -428,8 +514,30 @@ async function sendMessage(text: string): Promise<void> {
     return;
   }
 
-  if (isSelectionActionRequest(trimmed) && (!attachedPage || attachedPage.kind !== 'selection')) {
+  if (
+    isSelectionActionRequest(trimmed) &&
+    (!attachedContext || attachedContext.kind !== 'selection')
+  ) {
     await replyWithText(assistantId, t('attachSelectionFirst'));
+    setWriting(false);
+    void persistCurrentConversation();
+    chatInput()?.focus();
+    return;
+  }
+
+  if (isImageActionRequest(trimmed) && (!attachedContext || attachedContext.kind !== 'image')) {
+    await replyWithText(assistantId, t('attachImageFirst'));
+    setWriting(false);
+    void persistCurrentConversation();
+    chatInput()?.focus();
+    return;
+  }
+
+  if (
+    isDocumentActionRequest(trimmed) &&
+    (!attachedContext || attachedContext.kind !== 'document')
+  ) {
+    await replyWithText(assistantId, t('attachDocumentFirst'));
     setWriting(false);
     void persistCurrentConversation();
     chatInput()?.focus();
@@ -453,8 +561,8 @@ async function sendMessage(text: string): Promise<void> {
   }
 
   promptAbort = new AbortController();
-  const modelPrompt = attachedPage
-    ? buildPromptWithPageContext(trimmed, attachedPage)
+  const modelPrompt = attachedContext
+    ? buildPromptWithContext(trimmed, attachedContext)
     : trimmed;
 
   try {
@@ -576,8 +684,30 @@ export function bindChatEvents(): void {
     void attachActiveSelection();
   });
 
+  document.getElementById('attach-document-btn')?.addEventListener('click', () => {
+    document.getElementById('document-file-input')?.click();
+  });
+
+  document.getElementById('attach-image-btn')?.addEventListener('click', () => {
+    document.getElementById('image-file-input')?.click();
+  });
+
+  document.getElementById('document-file-input')?.addEventListener('change', (e) => {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (file) void attachDocumentFromFile(file);
+  });
+
+  document.getElementById('image-file-input')?.addEventListener('change', (e) => {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (file) void attachImageFromFile(file);
+  });
+
   document.getElementById('context-clear')?.addEventListener('click', () => {
-    clearAttachedPage();
+    clearAttachedContext();
     chatInput()?.focus();
   });
 }
@@ -603,6 +733,7 @@ export async function onLocaleChangeForChat(locale: Locale): Promise<void> {
 
 export function teardownChat(): void {
   promptAbort?.abort();
-  clearAttachedPage();
+  clearAttachedContext();
+  revokeContextThumb();
   destroyWarmSession();
 }

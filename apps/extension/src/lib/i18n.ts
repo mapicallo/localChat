@@ -48,6 +48,20 @@ export type MessageKey =
   | 'useThisPageHint'
   | 'useSelection'
   | 'useSelectionHint'
+  | 'attachDocument'
+  | 'attachDocumentHint'
+  | 'attachImage'
+  | 'attachImageHint'
+  | 'attachDocumentFirst'
+  | 'attachImageFirst'
+  | 'documentAttachedHint'
+  | 'imageAttachedHint'
+  | 'errorFileTooLarge'
+  | 'errorFileUnsupported'
+  | 'errorFileEmpty'
+  | 'errorPdfFailed'
+  | 'errorImageFailed'
+  | 'errorFileRead'
   | 'attachToolsHint'
   | 'resizeHandleLabel'
   | 'attachPageConfirm'
@@ -120,8 +134,26 @@ const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
     useThisPageHint: 'Attach visible text from the browser tab you were on when you opened LocalChat.',
     useSelection: 'Use selection',
     useSelectionHint: 'Highlight text on the page, then click to attach only that fragment.',
+    attachDocument: 'Attach document',
+    attachDocumentHint: 'Pick a local PDF or text file. Text is extracted on this device only.',
+    attachImage: 'Attach image',
+    attachImageHint: 'Pick a local PNG, JPEG, WebP, or GIF. Processed on this device only.',
+    attachDocumentFirst:
+      'Attach a document first: click “Attach document” in the toolbar, then ask your question.',
+    attachImageFirst:
+      'Attach an image first: click “Attach image” in the toolbar, then ask your question.',
+    documentAttachedHint:
+      'Document attached. Ask a question or e.g. “Summarize this document”.',
+    imageAttachedHint:
+      'Image attached. Ask a question or e.g. “Describe this image”.',
+    errorFileTooLarge: 'File is too large. Try a smaller file (max ~8 MB for images, ~16 MB for documents).',
+    errorFileUnsupported: 'Unsupported file type. Use PDF, text, Markdown, CSV, JSON, or common image formats.',
+    errorFileEmpty: 'No readable text found in this file.',
+    errorPdfFailed: 'Could not read this PDF. Try a text export or another file.',
+    errorImageFailed: 'Could not load this image. Try PNG, JPEG, WebP, or GIF.',
+    errorFileRead: 'Could not read this file. Try again with another file.',
     attachToolsHint:
-      'Optional: attach page text to summarize or ask questions about it. Use this page for the full tab, or mark text and use Use selection for a fragment.',
+      'Optional: attach page text, a selection, a local document, or an image—then ask your question. Everything stays on this device.',
     attachPageConfirm:
       'LocalChat will read visible text from the active tab in this window (not your files). Continue?',
     attachPageFirst:
@@ -197,8 +229,26 @@ const MESSAGES: Record<Locale, Record<MessageKey, string>> = {
     useThisPageHint: 'Adjunta el texto visible de la pestaña del navegador al abrir LocalChat.',
     useSelection: 'Usar selección',
     useSelectionHint: 'Marca texto en la página y pulsa para adjuntar solo ese fragmento.',
+    attachDocument: 'Adjuntar documento',
+    attachDocumentHint: 'Elige un PDF o archivo de texto local. El texto se extrae solo en este dispositivo.',
+    attachImage: 'Adjuntar imagen',
+    attachImageHint: 'Elige PNG, JPEG, WebP o GIF local. Se procesa solo en este dispositivo.',
+    attachDocumentFirst:
+      'Primero adjunta un documento: pulsa «Adjuntar documento» en la barra y luego pregunta.',
+    attachImageFirst:
+      'Primero adjunta una imagen: pulsa «Adjuntar imagen» en la barra y luego pregunta.',
+    documentAttachedHint:
+      'Documento adjunto. Pregunta lo que quieras o p. ej. «Resume este documento».',
+    imageAttachedHint:
+      'Imagen adjunta. Pregunta lo que quieras o p. ej. «Describe esta imagen».',
+    errorFileTooLarge: 'Archivo demasiado grande. Prueba uno más pequeño (máx. ~8 MB imágenes, ~16 MB documentos).',
+    errorFileUnsupported: 'Tipo de archivo no admitido. Usa PDF, texto, Markdown, CSV, JSON o formatos de imagen habituales.',
+    errorFileEmpty: 'No hay texto legible en este archivo.',
+    errorPdfFailed: 'No se pudo leer este PDF. Prueba exportar a texto u otro archivo.',
+    errorImageFailed: 'No se pudo cargar esta imagen. Prueba PNG, JPEG, WebP o GIF.',
+    errorFileRead: 'No se pudo leer el archivo. Inténtalo con otro.',
     attachToolsHint:
-      'Opcional: adjunta texto de la página para resumir o preguntar. Usar esta página = pestaña completa; marcar texto + Usar selección = fragmento.',
+      'Opcional: adjunta texto de página, selección, documento local o imagen—y luego pregunta. Todo se queda en este dispositivo.',
     attachPageConfirm:
       'LocalChat leerá el texto visible de la pestaña activa en esta ventana (no tus archivos). ¿Continuar?',
     attachPageFirst:
@@ -325,6 +375,18 @@ export function applyStaticTranslations(root: ParentNode): void {
   if (selBtn) {
     selBtn.textContent = t('useSelection');
     selBtn.title = t('useSelectionHint');
+  }
+
+  const docBtn = root.querySelector<HTMLButtonElement>('#attach-document-btn');
+  if (docBtn) {
+    docBtn.textContent = t('attachDocument');
+    docBtn.title = t('attachDocumentHint');
+  }
+
+  const imgBtn = root.querySelector<HTMLButtonElement>('#attach-image-btn');
+  if (imgBtn) {
+    imgBtn.textContent = t('attachImage');
+    imgBtn.title = t('attachImageHint');
   }
 
   const attachHint = root.querySelector<HTMLElement>('#attach-hint');

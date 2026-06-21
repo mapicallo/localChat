@@ -1,7 +1,7 @@
 # LocalChat — Capacidades (referencia canónica)
 
 Documento de verdad para respuestas honestas del asistente.  
-**Versión extensión:** 0.7.x · **Actualizar** al añadir features.
+**Versión extensión:** 0.9.x · **Actualizar** al añadir features.
 
 ---
 
@@ -10,10 +10,12 @@ Documento de verdad para respuestas honestas del asistente.
 | Capacidad | Detalle |
 |-----------|---------|
 | Chat local | Conversación con Gemini Nano en el dispositivo (Prompt API). |
-| Streaming | Respuestas en tiempo real en el panel lateral. |
+| Streaming | Respuestas en tiempo real en la ventana popup. |
 | **Contexto de pestaña** | Botón **«Usar esta página»** — lee texto visible de la pestaña activa (con confirmación). |
 | **Texto seleccionado** | Botón **«Usar selección»** — adjunta solo el fragmento que marques en la pestaña activa. |
-| Resumir / Q&A sobre página o selección | Tras adjuntar contexto, preguntar p. ej. «Resume esta página» o «Explícalo más simple». |
+| **Documento local** | Botón **«Adjuntar documento»** — PDF o texto (.txt, .md, .csv, .json, etc.); extracción en el dispositivo. |
+| **Imagen local** | Botón **«Adjuntar imagen»** — PNG/JPEG/WebP/GIF; prompt multimodal con Gemini Nano en local. |
+| Resumir / Q&A sobre página, selección, documento o imagen | Tras adjuntar contexto, preguntar p. ej. «Resume este documento» o «Describe esta imagen». |
 | Privacidad del chat | El texto no se envía a servidores de AI4Context. |
 | Nueva conversación | Reinicia sesión del modelo y borra hilo + contexto adjunto. |
 | **Historial local** | Conversaciones guardadas en el dispositivo (Historial); recuperables al reabrir LocalChat. |
@@ -27,7 +29,7 @@ Documento de verdad para respuestas honestas del asistente.
 
 | Límite | Detalle |
 |--------|---------|
-| Archivos del SO | No lee disco, Documentos, descargas ni carpetas del usuario. |
+| Explorar disco | No rastrea carpetas ni abre archivos sin que el usuario elija uno con el selector. |
 | Terminal / comandos | No ejecuta PowerShell, bash ni scripts del sistema. |
 | Otras apps | Solo existe dentro de la extensión Chrome. |
 | Nube del desarrollador | No sube conversaciones a backend AI4Context. |
@@ -58,6 +60,26 @@ Documento de verdad para respuestas honestas del asistente.
 5. Aparece chip **Selección: [vista previa]**.
 6. Escribe pregunta o p. ej. «Explícalo más simple».
 7. Gemini Nano procesa la selección **solo en local** (hasta ~20k caracteres; puede truncar).
+
+---
+
+## Flujo «Adjuntar documento»
+
+1. Usuario abre LocalChat (ventana popup).
+2. Pulsa **Adjuntar documento** → elige PDF o archivo de texto.
+3. Aparece chip **Documento: [nombre]**.
+4. Escribe pregunta o «Resume este documento».
+5. Texto extraído en el panel (PDF vía pdf.js); hasta ~40k caracteres; puede truncar.
+
+---
+
+## Flujo «Adjuntar imagen»
+
+1. Usuario abre LocalChat.
+2. Pulsa **Adjuntar imagen** → elige PNG, JPEG, WebP o GIF (máx. ~8 MB).
+3. Aparece chip **Imagen: [nombre]** con miniatura.
+4. Escribe pregunta o «Describe esta imagen».
+5. Imagen redimensionada si hace falta (máx. 2048 px); prompt multimodal **solo en local**.
 
 ---
 

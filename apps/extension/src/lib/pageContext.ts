@@ -1,18 +1,21 @@
+import type { ChatContext } from './chatContext.js';
+import { resolveTargetTabId } from './tabContext.js';
+
+export type { ChatContext };
+export {
+  buildPromptWithContext,
+  formatContextChip,
+  isDocumentActionRequest,
+  isImageActionRequest,
+  isPageActionRequest,
+  isSelectionActionRequest,
+} from './chatContext.js';
+
 /** Max characters sent to the on-device model from a single page capture. */
 export const MAX_PAGE_CHARS = 40_000;
 
 /** Max characters from a text selection attach. */
 export const MAX_SELECTION_CHARS = 20_000;
-
-export type ContextKind = 'page' | 'selection';
-
-export interface PageContext {
-  kind: ContextKind;
-  title: string;
-  url: string;
-  text: string;
-  truncated: boolean;
-}
 
 export type PageExtractFailure =
   | 'no_tab'
@@ -22,7 +25,7 @@ export type PageExtractFailure =
   | 'script_failed';
 
 export type PageExtractResult =
-  | { ok: true; context: PageContext }
+  | { ok: true; context: ChatContext }
   | { ok: false; error: PageExtractFailure };
 
 const RESTRICTED_PREFIXES = [
@@ -48,8 +51,6 @@ function isRestrictedUrl(url: string): boolean {
   }
   return false;
 }
-
-import { resolveTargetTabId } from './tabContext.js';
 
 async function getActiveTab(): Promise<chrome.tabs.Tab | null> {
   const tabId = await resolveTargetTabId();
@@ -122,8 +123,8 @@ export async function extractActiveTabText(): Promise<PageExtractResult> {
       return { ok: false, error: 'script_failed' };
     }
 
-    const { title, text, truncated } = payload as PageContext;
-    const pageUrl = (payload as PageContext).url || url;
+    const { title, text, truncated } = payload as ChatContext;
+    const pageUrl = (payload as ChatContext).url || url;
     const pageTitle = title || tab.title || pageUrl;
 
     if (!text.trim()) return { ok: false, error: 'empty' };
@@ -162,8 +163,8 @@ export async function extractActiveTabSelection(): Promise<PageExtractResult> {
       return { ok: false, error: 'script_failed' };
     }
 
-    const { text, truncated } = payload as PageContext;
-    const pageUrl = (payload as PageContext).url || url;
+    const { text, truncated } = payload as ChatContext;
+    const pageUrl = (payload as ChatContext).url || url;
     const pageTitle = tab.title || pageUrl;
 
     if (!text.trim()) return { ok: false, error: 'no_selection' };
@@ -181,72 +182,4 @@ export async function extractActiveTabSelection(): Promise<PageExtractResult> {
   } catch {
     return { ok: false, error: 'script_failed' };
   }
-}
-
-/** Wrap user message with approved page or selection text for the local model. */
-export function buildPromptWithPageContext(userText: string, ctx: PageContext): string {
-  const truncNote = ctx.truncated
-    ? '\n[Note: attached text was truncated to fit model limits.]'
-    : '';
-
-  if (ctx.kind === 'selection') {
-    return `[Selected text from web page — user explicitly attached; process locally only]
-Page title: ${ctx.title}
-URL: ${ctx.url}${truncNote}
-
---- Selected text start ---
-${ctx.text}
---- Selected text end ---
-
-User message:
-${userText}`;
-  }
-
-  return `[Web page context — user explicitly attached this tab; process locally only]
-Title: ${ctx.title}
-URL: ${ctx.url}${truncNote}
-
---- Page text start ---
-${ctx.text}
---- Page text end ---
-
-User message:
-${userText}`;
-}
-
-/** User wants page-based action but has not attached context yet. */
-export function isPageActionRequest(text: string): boolean {
-  const n = text.trim();
-  return (
-    /\b(summarize|summary|summarise|resume|resumir|resumen|explain|explica).{0,40}(this )?(page|tab|website|article|site|p[aá]gina|pesta[nñ]a|web|art[ií]culo|sitio)\b/i.test(
-      n,
-    ) ||
-    /\b(read|lee|l[eé]e).{0,30}(this )?(page|tab|p[aá]gina|pesta[nñ]a)\b/i.test(n) ||
-    /\b(qu[eé]|what) (does|dice).{0,20}(this )?(page|p[aá]gina)\b/i.test(n)
-  );
-}
-
-/** User asks about a text fragment without attaching selection. */
-export function isSelectionActionRequest(text: string): boolean {
-  const n = text.trim();
-  return (
-    /\b(summarize|summary|summarise|resume|resumir|explain|explica|translate|traduce).{0,35}(this )?(selection|fragment|snippet|text|quote|pasaje|fragmento|texto|selecci[oó]n)\b/i.test(
-      n,
-    ) ||
-    /\b(qu[eé]|what) (does|means?|significa|dice).{0,25}(this )?(selection|fragment|text|selecci[oó]n)\b/i.test(
-      n,
-    )
-  );
-}
-
-export function formatContextChip(ctx: PageContext, locale: 'en' | 'es'): string {
-  if (ctx.kind === 'selection') {
-    const label = locale === 'es' ? 'Selección' : 'Selection';
-    const preview = ctx.text.length > 44 ? `${ctx.text.slice(0, 41)}…` : ctx.text;
-    return `${label}: ${preview}`;
-  }
-
-  const label = locale === 'es' ? 'Contexto' : 'Context';
-  const short = ctx.title.length > 48 ? `${ctx.title.slice(0, 45)}…` : ctx.title;
-  return `${label}: ${short}`;
 }

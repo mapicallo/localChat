@@ -412,6 +412,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  align-items: center;
 }
 
 .lc-attach-hint {
@@ -551,6 +552,15 @@ body {
   font-size: 0.75rem;
   color: var(--lc-muted);
   text-align: center;
+}
+
+.lc-context-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(102, 126, 234, 0.35);
 }
 
 .lc-context-bar {

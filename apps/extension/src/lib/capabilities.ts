@@ -127,23 +127,24 @@ CAN do now:
 • Stream answers in this side panel.
 • Attach visible text from the active tab (button “Use this page”) for summaries or Q&A.
 • Attach highlighted text only (button “Use selection”) for fragments you select.
+• Attach a local document (PDF or text file) or image you pick—processed on this device only.
 • Start a new conversation or stop a reply in progress.
 • Explain these limits when you ask.
 
 CANNOT do (yet or ever):
-• Read your PC files, folders, or terminal—never.
+• Read your PC files or folders without you picking one—never browse your disk.
 • Send your chat to AI4Context servers—no developer cloud for messages.
 • Read pages without your explicit click—no background tab monitoring.
 • Fill web forms automatically—not yet.
 
 {{STATUS}}
 
-Use “Use this page” or highlight text + “Use selection”, then ask your question.`,
-    files_os: `No—I cannot read files on your computer, open folders, or run terminal commands.
+Use “Use this page”, “Attach document/image”, or highlight text + “Use selection”, then ask your question.`,
+    files_os: `I cannot browse your computer, open folders, or run terminal commands.
 
-LocalChat only runs inside this Chrome extension. I only see messages you type here and page text you attach with “Use this page”.
+If you click “Attach document” or “Attach image”, you choose one file and LocalChat reads it only in memory on this device—it is not uploaded to AI4Context servers.
 
-Your files on disk stay private from this extension.`,
+I never scan your disk in the background.`,
     cloud_privacy: `Your chat text is processed locally by Gemini Nano in Chrome. LocalChat does not upload your conversations to AI4Context servers.
 
 Google Chrome manages the on-device model; see Chrome's built-in AI privacy notices for model download and updates. I do not sell or sync your chat to a developer backend.`,
@@ -168,23 +169,24 @@ SÍ puede ahora:
 • Mostrar respuestas en streaming en este panel.
 • Adjuntar texto visible de la pestaña activa (botón «Usar esta página») para resumir o preguntar.
 • Adjuntar solo el texto marcado (botón «Usar selección») para fragmentos que selecciones.
+• Adjuntar un documento local (PDF o texto) o imagen que elijas—solo en este dispositivo.
 • Iniciar una conversación nueva o detener una respuesta.
 • Explicar estos límites cuando preguntes.
 
 NO puede (aún o nunca):
-• Leer archivos, carpetas o terminal de tu PC—nunca.
+• Explorar archivos o carpetas de tu PC sin que tú elijas uno—nunca rastrea tu disco.
 • Enviar tu chat a servidores de AI4Context—sin nube del desarrollador.
 • Leer páginas sin tu clic explícito—sin vigilar pestañas en segundo plano.
 • Rellenar formularios automáticamente—aún no.
 
 {{STATUS}}
 
-Usa «Usar esta página» o marca texto + «Usar selección», y luego pregunta.`,
-    files_os: `No—no puedo leer archivos de tu ordenador, abrir carpetas ni ejecutar comandos en la terminal.
+Usa «Usar esta página», «Adjuntar documento/imagen», o marca texto + «Usar selección», y luego pregunta.`,
+    files_os: `No puedo explorar tu ordenador, abrir carpetas ni ejecutar comandos en la terminal.
 
-LocalChat solo funciona dentro de esta extensión de Chrome. Solo veo mensajes que escribes aquí y texto de página que adjuntas con «Usar esta página».
+Si pulsas «Adjuntar documento» o «Adjuntar imagen», tú eliges un archivo y LocalChat lo lee solo en memoria en este dispositivo—no se sube a servidores de AI4Context.
 
-Tus archivos en disco no los lee esta extensión.`,
+Nunca escaneo tu disco en segundo plano.`,
     cloud_privacy: `Tu chat se procesa en local con Gemini Nano en Chrome. LocalChat no sube tus conversaciones a servidores de AI4Context.
 
 Chrome gestiona el modelo en el dispositivo; consulta sus avisos de privacidad para descarga y actualizaciones. No vendo ni sincronizo tu chat con un backend del desarrollador.`,

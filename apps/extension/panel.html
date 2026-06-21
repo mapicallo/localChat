@@ -106,7 +106,35 @@
               >
                 Use selection
               </button>
+              <button
+                type="button"
+                id="attach-document-btn"
+                class="lc-btn lc-btn-ghost"
+                title="Attach a local document"
+              >
+                Attach document
+              </button>
+              <button
+                type="button"
+                id="attach-image-btn"
+                class="lc-btn lc-btn-ghost"
+                title="Attach a local image"
+              >
+                Attach image
+              </button>
             </div>
+            <input
+              type="file"
+              id="document-file-input"
+              hidden
+              accept=".pdf,.txt,.md,.markdown,.csv,.json,.log,.xml,.html,.htm,.yml,.yaml,text/*,application/pdf"
+            />
+            <input
+              type="file"
+              id="image-file-input"
+              hidden
+              accept="image/png,image/jpeg,image/webp,image/gif"
+            />
             <span id="writing-indicator" class="lc-writing" hidden>Writing…</span>
           </div>
 
@@ -125,6 +153,7 @@
           <p class="lc-attach-hint" id="attach-hint"></p>
 
           <div id="context-bar" class="lc-context-bar" hidden>
+            <img id="context-thumb" class="lc-context-thumb" alt="" hidden />
             <span id="context-chip" class="lc-context-chip"></span>
             <button type="button" id="context-clear" class="lc-context-clear">Remove context</button>
           </div>
@@ -181,7 +210,7 @@
         </section>
       </main>
 
-      <div class="lc-version-strip" id="version-strip">v0.7.0</div>
+      <div class="lc-version-strip" id="version-strip">v0.9.0</div>
 
       <footer class="lc-site-footer" role="contentinfo">
         <div class="lc-site-footer-inner">
